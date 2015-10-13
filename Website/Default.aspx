@@ -17,11 +17,9 @@
             background: white;
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div id="map" class="map"></div>
-        <script>
+    
+    <script>
+        function loadMap() {
             var capabilitiesUrl = 'http://www.basemap.at/wmts/1.0.0/WMTSCapabilities.xml';
 
             // HiDPI support:
@@ -39,7 +37,7 @@
                 })
             });
 
-            $.ajax(capabilitiesUrl).then(function (response) {
+            $.ajax(capabilitiesUrl).then(function(response) {
                 var result = new ol.format.WMTSCapabilities().read(response);
                 var options = ol.source.WMTS.optionsFromCapabilities(result, {
                     layer: layer,
@@ -52,8 +50,19 @@
                     source: new ol.source.WMTS(options)
                 }));
             });
+        }
+    </script>
+    <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap-theme.min.css">
 
-        </script>
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
+</head>
+<body onload="loadMap()">
+    <form id="form1" runat="server">
+        <div id="map" class="map"></div>
+        
     </form>
 </body>
 </html>

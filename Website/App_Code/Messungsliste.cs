@@ -89,12 +89,19 @@ namespace AppCode
             set { m_Messwerte[index] = value; }
         }
 
-        public List<FeatureOfInterest> LoadFromSOS()
+        public void LoadFromSOS()
         {
             String jsonStr = m_Con.GetFeatureOfInterestFromSOS();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
-            return helper.featureOfInterest;
+
+            foreach(FeatureOfInterest featureOfInterest in helper.featureOfInterest)
+            {
+                List<Single> geometry = featureOfInterest.geometry.coordinates;
+                Single x = geometry[0];
+                Single y = geometry[1];
+                this.m_Messwerte.Add(new Messwert { Standort = new Standort { Longitude = x, Latitude = y } });
+            }
         }
     }
 

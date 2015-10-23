@@ -5,24 +5,39 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using AppCode;
+using System.Web.Services;
+using System.Web.Script.Serialization;
 
 public partial class _Default : System.Web.UI.Page
 {
-    private Messungsliste m_Liste;
+    public Messungsliste Messungen { get; set; }
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        m_Liste = new Messungsliste();
-        List<FeatureOfInterest> featureOfInterests = m_Liste.LoadFromSOS();
+        
+    }
 
-        foreach (FeatureOfInterest featureOfInterest in featureOfInterests)
+    /// <summary>
+    /// @Author: Dominik Sammer
+    /// @Date: 23.10.2015
+    /// Methode gibt Liste mit Standorten der aktuellen Liste zurück.
+    /// Wird mit einem AJAX Call aufgerufen
+    /// </summary>
+    /// <returns></returns>
+    [WebMethod]
+    public static List<Standort> GetMessungen()
+    {
+        Messungsliste messungen = new Messungsliste();
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        messungen.LoadFromSOS();
+
+        List<Standort> orte = new List<Standort>();
+        foreach(Messwert mw in messungen)
         {
-            List<Single> geometry = featureOfInterest.geometry.coordinates;
-            Single x = geometry[0];
-            Single y = geometry[1];
-            Response.Write("X: " + x + " Y: " + y + "<br>");
-
+            orte.Add(mw.Standort);
         }
+
+        return orte;
     }
 
 }

@@ -89,6 +89,7 @@
                 for (i = 0; i < resp.length; i++) {
                     createPin(resp[i].Longitude, resp[i].Latitude);
                 }
+                L.control.mousePosition().addTo(map);
             }
             //Funktion erstellt den Pin an long und lat
             function createPin(long, lat) {
@@ -99,9 +100,10 @@
        
     </script>
     <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
+    <script src="libraries/MousePosition/javascript/L.Control.MousePosition.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap-theme.min.css">
-
+    <link rel="stylesheet" href="libraries/MousePosition/css/L.Control.MousePosition.css">
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>

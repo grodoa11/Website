@@ -57,7 +57,7 @@
                 detectRetina: true
             }).addTo(map);
 
-            alert("test");
+            
 
             return map;
         }
@@ -113,7 +113,7 @@
                     
                 }
                 L.control.mousePosition().addTo(map);
-                var heat = L.heatLayer(datatest, { radius: 25 }).addTo(map);
+                var heat = L.heatLayer(datatest, { radius: 5 }).addTo(map);
             }
             //Funktion erstellt den Pin an long und lat
             function createPin(long, lat) {

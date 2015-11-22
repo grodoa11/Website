@@ -17,9 +17,10 @@
      <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
 
     <style>
-        #map { height: 500px; width: 75% }
+        #map { height: 900px; width: 75% }
     </style>
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
+
     <script>
         //Funktion ladet Basemap mit Leaflet
         //Gibt ein Objekt des typs Map zurück
@@ -55,6 +56,9 @@
                 tms: false,
                 detectRetina: true
             }).addTo(map);
+
+            alert("test");
+
             return map;
         }
 
@@ -67,7 +71,12 @@
         */
         function loadMeasurements() {
             map = loadBasemap();
+           
 
+            var datatest = {
+                
+                data: [[ 47.18447,15.28200 ], [47.34575, 16.12345 ]]
+            };
             //Hole Messungen mit AJAX von der Default.aspx.cs
             $.ajax({
                 type: "POST",
@@ -84,12 +93,27 @@
                 }
             }
             );
+            
+            console.log("test");
+            console.log(datatest.data.length);
+            //addressPoints = addressPoints.map(function (p) { return [p[0], p[1]]; });
+            
+            
+            //heat.setLatLngs(testData);
+            //heat.redraw();
+            
+            
+            
             //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
             function handleResponse(resp) {
                 for (i = 0; i < resp.length; i++) {
                     createPin(resp[i].Longitude, resp[i].Latitude);
+                    
+                    datatest.data.push([resp[i].Longitude, resp[i].Latitude]);
+                    
                 }
                 L.control.mousePosition().addTo(map);
+                var heat = L.heatLayer(datatest, { radius: 25 }).addTo(map);
             }
             //Funktion erstellt den Pin an long und lat
             function createPin(long, lat) {
@@ -101,9 +125,12 @@
     </script>
     <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
     <script src="libraries/MousePosition/javascript/L.Control.MousePosition.js"></script>
+    <script src="libraries/HeatLayer.js"></script>
+    <script src="libraries/leaflet-heat.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="libraries/MousePosition/css/L.Control.MousePosition.css">
+    
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>

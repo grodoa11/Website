@@ -73,10 +73,10 @@
             map = loadBasemap();
            
 
-            var datatest = {
+            //var datatest = {
                 
-                data: [[ 47.18447,15.28200 ], [47.34575, 16.12345 ]]
-            };
+            //    data: [[ 47.18447,15.28200 ], [47.34575, 16.12345 ]]
+            //};
             //Hole Messungen mit AJAX von der Default.aspx.cs
             $.ajax({
                 type: "POST",
@@ -95,7 +95,7 @@
             );
             
             console.log("test");
-            console.log(datatest.data.length);
+            //console.log(datatest.data.length);
             //addressPoints = addressPoints.map(function (p) { return [p[0], p[1]]; });
             
             
@@ -104,21 +104,48 @@
             
             
             
-            //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
-            function handleResponse(resp) {
-                for (i = 0; i < resp.length; i++) {
-                    createPin(resp[i].Longitude, resp[i].Latitude);
-                    
-                    datatest.data.push([resp[i].Longitude, resp[i].Latitude]);
-                    
+            
+        }
+
+
+        //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
+        function handleResponse(resp) {
+            for (i = 0; i < resp.length; i++) {
+                createPin(resp[i].Longitude, resp[i].Latitude);
+
+                //datatest.data.push([resp[i].Longitude, resp[i].Latitude]);
+
+            }
+            L.control.mousePosition().addTo(map);
+           // var heat = L.heatLayer(datatest, { radius: 5 }).addTo(map);
+        }
+        //Funktion erstellt den Pin an long und lat
+        function createPin(long, lat) {
+            L.marker([long, lat]).addTo(map);
+        }
+
+        function neuerFilter() {
+            var startdatum = document.getElementById("startDatum").value;
+            var enddatum = document.getElementById("endDatum").value;
+            var obj = new Object();
+            obj.startdatum = startdatum;
+            obj.enddatum = enddatum;
+            $.ajax({
+                type: "POST",
+                url: "Default.aspx/GetMessungenGefiltert",
+                data: JSON.stringify(obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (msg) {
+                    try {
+                        alert(msg);
+                    } catch (ex) {
+                        alert(ex);
+                    }
+                    //console.log(msg);
                 }
-                L.control.mousePosition().addTo(map);
-                var heat = L.heatLayer(datatest, { radius: 5 }).addTo(map);
             }
-            //Funktion erstellt den Pin an long und lat
-            function createPin(long, lat) {
-                L.marker([long, lat]).addTo(map);
-            }
+            );
         }
 
        
@@ -135,6 +162,33 @@
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>
 <body onload="loadMeasurements()">
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">SoundCheck</a>
+        </div>
+        <div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+           </ul>
+            <ul class="nav navbar-nav navbar-right">
+                
+                </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div>
+        <table class="table" style="width: 50%">
+            <tr>
+                <td>Zeitraum einstellen von dem Messungen geladen werden</td>
+                <td>Von: <input type="date" class="input-sm" id="startDatum"/></td>
+                <td>Bis: <input type="date" class="input-sm" id="endDatum"/></td>
+                <td><input type="button" class="btn-success" value="Filter eingeben" onclick="neuerFilter()"/></td>
+            </tr>
+        </table>
+    </div>
+
     <form id="form1" runat="server">
         <div id="map" class="map"></div>
         

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.ServiceModel.Description;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -54,7 +55,7 @@ namespace AppCode
         public void CopyTo(Messwert[] array, int arrayIndex)
         {
             //todo
-            
+
         }
 
         public bool Remove(Messwert item)
@@ -89,13 +90,26 @@ namespace AppCode
             set { m_Messwerte[index] = value; }
         }
 
+        public List<Messwert> Filter(DateTime startDate, DateTime enddate)
+        {
+            List<Messwert> messungenGefiltert = new List<Messwert>();
+            foreach (Messwert mw in m_Messwerte)
+            {
+                if (mw.ZeitpunktDerMessung > startDate && mw.ZeitpunktDerMessung < enddate)
+                {
+                    messungenGefiltert.Add(mw);
+                }
+            }
+            return messungenGefiltert;
+        }
+
         public void LoadFromSOS()
         {
             String jsonStr = m_Con.GetFeatureOfInterestFromSOS();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
 
-            foreach(FeatureOfInterest featureOfInterest in helper.featureOfInterest)
+            foreach (FeatureOfInterest featureOfInterest in helper.featureOfInterest)
             {
                 List<Single> geometry = featureOfInterest.geometry.coordinates;
                 Single x = geometry[0];

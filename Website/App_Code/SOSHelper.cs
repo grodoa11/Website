@@ -34,5 +34,5 @@ public class Identifier
 public class Geometry
 {
     public String type { get; set; }
-    public List<Single> coordinates  { get; set; }
+    public List<Single> coordinates { get; set; }
 }

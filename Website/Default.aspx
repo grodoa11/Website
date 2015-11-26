@@ -13,15 +13,19 @@
     <script src="http://openlayers.org/en/v3.9.0/build/ol.js"></script>
 
     <!--Leaflet-->
-     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
-     <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
 
     <style>
-        #map { height: 900px; width: 75% }
+        #map {
+            height: 900px;
+            width: 75%;
+        }
     </style>
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
 
     <script>
+        var feld = [];
         //Funktion ladet Basemap mit Leaflet
         //Gibt ein Objekt des typs Map zurück
         function loadBasemap() {
@@ -38,9 +42,9 @@
 
             map = L.map('map', {
                 zoomControl: false,
-                minZoom: 8,
-                maxZoom: 18,
-                maxBounds: bounds
+                //minZoom: 8,
+                //maxZoom: 18,
+                //maxBounds: bounds
             }).setView([longitude, latitude], zoom);
 
             //In das richtige Fromat EPSG 3857 umrechnen
@@ -57,7 +61,11 @@
                 detectRetina: true
             }).addTo(map);
 
-            
+            //var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            //}).addTo(map);
+
+
 
             return map;
         }
@@ -71,12 +79,22 @@
         */
         function loadMeasurements() {
             map = loadBasemap();
-           
+            //try {
+            //    var datatest = {
 
-            //var datatest = {
-                
-            //    data: [[ 47.18447,15.28200 ], [47.34575, 16.12345 ]]
-            //};
+            //        data: [[47.18447, 15.28200], [47.34575, 16.12345]]
+            //    };
+            //    var heat = L.heatLayer(datatest, { radius: 100 }).addTo(map);
+            //    console.log("heat initialized")
+            //} catch (e) {
+            //    console.log(e.message);
+            //}
+
+
+
+
+
+
             //Hole Messungen mit AJAX von der Default.aspx.cs
             $.ajax({
                 type: "POST",
@@ -93,32 +111,35 @@
                 }
             }
             );
-            
-            console.log("test");
-            //console.log(datatest.data.length);
-            //addressPoints = addressPoints.map(function (p) { return [p[0], p[1]]; });
-            
-            
-            //heat.setLatLngs(testData);
-            //heat.redraw();
-            
-            
-            
-            
+
         }
 
 
         //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
         function handleResponse(resp) {
+            var feld = [];
+            
+            
             for (i = 0; i < resp.length; i++) {
                 createPin(resp[i].Longitude, resp[i].Latitude);
-
-                //datatest.data.push([resp[i].Longitude, resp[i].Latitude]);
+                feld[i] = [resp[i].Longitude, resp[i].Latitude,0.8];
+                
 
             }
             L.control.mousePosition().addTo(map);
-           // var heat = L.heatLayer(datatest, { radius: 5 }).addTo(map);
+            loadHeatMap(feld);
+
+
+            console.log("test");
+
         }
+
+        function loadHeatMap(feld) {
+            var heat = L.heatLayer(
+                            feld
+                        , { radius: 25, maxZoom:14, blur:15}).addTo(map);
+        }
+
         //Funktion erstellt den Pin an long und lat
         function createPin(long, lat) {
             L.marker([long, lat]).addTo(map);
@@ -148,7 +169,7 @@
             );
         }
 
-       
+
     </script>
     <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
     <script src="libraries/MousePosition/javascript/L.Control.MousePosition.js"></script>
@@ -157,41 +178,43 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="libraries/MousePosition/css/L.Control.MousePosition.css">
-    
+
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>
 <body onload="loadMeasurements()">
     <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">SoundCheck</a>
-        </div>
-        <div>
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-           </ul>
-            <ul class="nav navbar-nav navbar-right">
-                
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">SoundCheck</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
 
     <div>
         <table class="table" style="width: 50%">
             <tr>
                 <td>Zeitraum einstellen von dem Messungen geladen werden</td>
-                <td>Von: <input type="date" class="input-sm" id="startDatum"/></td>
-                <td>Bis: <input type="date" class="input-sm" id="endDatum"/></td>
-                <td><input type="button" class="btn-success" value="Filter eingeben" onclick="neuerFilter()"/></td>
+                <td>Von:
+                    <input type="date" class="input-sm" id="startDatum" /></td>
+                <td>Bis:
+                    <input type="date" class="input-sm" id="endDatum" /></td>
+                <td>
+                    <input type="button" class="btn-success" value="Filter eingeben" onclick="neuerFilter()" /></td>
             </tr>
         </table>
     </div>
 
     <form id="form1" runat="server">
         <div id="map" class="map"></div>
-        
+
     </form>
 </body>
 </html>

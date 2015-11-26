@@ -25,6 +25,7 @@
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
 
     <script>
+        //Member für Heatmap
         var feld = [];
         //Funktion ladet Basemap mit Leaflet
         //Gibt ein Objekt des typs Map zurück
@@ -61,6 +62,8 @@
                 detectRetina: true
             }).addTo(map);
 
+
+            //Open Street Map für Testzwecke
             //var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             //}).addTo(map);
@@ -79,22 +82,7 @@
         */
         function loadMeasurements() {
             map = loadBasemap();
-            //try {
-            //    var datatest = {
-
-            //        data: [[47.18447, 15.28200], [47.34575, 16.12345]]
-            //    };
-            //    var heat = L.heatLayer(datatest, { radius: 100 }).addTo(map);
-            //    console.log("heat initialized")
-            //} catch (e) {
-            //    console.log(e.message);
-            //}
-
-
-
-
-
-
+            
             //Hole Messungen mit AJAX von der Default.aspx.cs
             $.ajax({
                 type: "POST",
@@ -116,8 +104,9 @@
 
 
         //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
+        //befüllt die Daten für Heatmap
         function handleResponse(resp) {
-            var feld = [];
+            
             
             
             for (i = 0; i < resp.length; i++) {
@@ -126,7 +115,9 @@
                 
 
             }
+            //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
             L.control.mousePosition().addTo(map);
+            //Fügt die HeatMap hinzu
             loadHeatMap(feld);
 
 
@@ -134,6 +125,7 @@
 
         }
 
+        //Funktion erstellt und fügt HeatMap in die Map ein
         function loadHeatMap(feld) {
             var heat = L.heatLayer(
                             feld

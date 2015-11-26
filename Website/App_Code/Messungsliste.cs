@@ -105,17 +105,27 @@ namespace AppCode
 
         public void LoadFromSOS()
         {
-            String jsonStr = m_Con.GetFeatureOfInterestFromSOS();
+            String jsonStr = m_Con.GetObservation();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
 
-            foreach (FeatureOfInterest featureOfInterest in helper.featureOfInterest)
+            String allResponses = "";
+            foreach (Observation observation in helper.observations)
             {
-                List<Single> geometry = featureOfInterest.geometry.coordinates;
+                //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
+                List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
                 Single x = geometry[0];
                 Single y = geometry[1];
+                Messwert mw = new Messwert();
+                mw.Standort = new Standort {Longitude = x, Latitude = y};
+                mw.ArtDerMessung = ArtDerMessung.Einfachmessung;
+                mw.ZeitpunktDerMessung = observation.resultTime;
+                mw.Wert = observation.result.value;
+                //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
                 this.m_Messwerte.Add(new Messwert { Standort = new Standort { Longitude = x, Latitude = y } });
+                
             }
+            allResponses += "";
         }
     }
 

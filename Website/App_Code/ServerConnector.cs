@@ -29,47 +29,80 @@ public class ServerConnector
     public String GetFeatureOfInterestFromSOS()
     {
         //Alle Messungen aus Österreich
-        String requestString = "{\"request\": \"GetFeatureOfInterest\"," +
-          "\"service\": \"SOS\"," +
-          "\"version\": \"2.0.0\"," +
-          "\"spatialFilter\": {" +
-                "\"bbox\": {" +
-                 " \"ref\": \"om:featureOfInterest/sams:SF_SpatialSamplingFeature/sams:shape\"," +
-                  "\"value\": {" +
+        String requestStr = "{" +
+                    "\"request\": \"GetFeatureOfInterest\"," +
+                    "\"service\": \"SOS\"," +
+                    "\"version\": \"2.0.0\"," +
+                    "\"procedure\":\"DecibelSensor\"," +
+                    "\"spatialFilter\": {" +
+                    "\"bbox\": {" +
+                    "\"ref\": \"om:featureOfInterest/sams:SF_SpatialSamplingFeature/sams:shape\"," +
+                    "\"value\": {" +
                     "\"type\": \"Polygon\"," +
                     "\"coordinates\": [" +
-                      "[[" +
-                          "46.28243," +
-                          "8.75061" +
-                        "],[" +
-                          "49.06306925171648," +
-                          "8.75061" +
-                        "],[" +
-                          "49.06306925171648," +
-                          "17.523193359374996" +
-                        "],[" +
-                          "46.28243," +
-                          "17.523193359374996" +
-                        "],[" +
-                          "46.28243," +
-                          "8.75061" +
-                        "]]]}}}}";
-        return this.GetResponse(requestString);
+                    "[" +
+                    "[" +
+                    "46.28243," +
+                    "8.75061" +
+                    "]," +
+                    "[" +
+                    "49.06306925171648," +
+                    "8.75061" +
+                    "],[" +
+                    "49.06306925171648," +
+                    "17.523193359374996" +
+                    "],[" +
+                    "46.28243," +
+                    "17.523193359374996" +
+                    "],[" +
+                    "46.28243,8.75061" +
+                    "]]]}}}}";
+
+        return this.GetResponse(requestStr);
     }
 
-    public void GetObservation(String obID)
+    /// <summary>
+    /// Methode gibt alle Observations als JSON mit Werten zurück die vom DecibelSensor aufgenommen wurden
+    /// @Author: Dominik Sammer
+    /// @Date: 26.11.2015
+    /// </summary>
+    /// <returns></returns>
+    public String GetObservation()
     {
+
         String requestStr = "{" +
-                  "\"request\": \"GetObservation\"," +
-                  "\"service\": \"SOS\"," +
-                  "\"version\": \"2.0.0\"," +
-                  "\"procedure\": \"DecibelSensor\"," +
-                  "\"offering\": \"DecibelSensor\"," +
-                  "\"observedProperty\": \"AmbientSound\"," +
-                  "\"featureOfInterest\": \"" + obID + "\"}";
+  "\"request\": \"GetObservation\"," +
+  "\"service\": \"SOS\"," +
+  "\"version\": \"2.0.0\"," +
+  "\"procedure\": [" +
+    "\"DecibelSensor\"" +
+  "]," +
+  "\"offering\": [" +
+    "\"DecibelSensor\"" +
+  "]," +
+  "\"observedProperty\": [" +
+    "\"AmbientSound\"]," +
+  "\"spatialFilter\": {" +
+    "\"bbox\": {" +
+      "\"ref\": \"om:featureOfInterest/sams:SF_SpatialSamplingFeature/sams:shape\"," +
+      "\"value\": {" +
+        "\"type\": \"Polygon\"," +
+        "\"coordinates\": [[[" +
+                          "46.28243,8.75061],[" +
+                          "49.06306925171648,8.75061],[" +
+                          "49.06306925171648,17.523193359374996],[" +
+                          "46.28243,17.523193359374996]," +
+                        "[46.28243,8.75061]]]}}}," +
+  "\"temporalFilter\": [" +
+    "{\"during\": {" +
+        "\"ref\": \"om:phenomenonTime\"," +
+        "\"value\": [" +
+          "\"2012-11-19T14:00:00+01:00\"," +
+          "\"2016-11-19T14:05:00+01:00\"" +
+        "]}}]}";
 
         String response = GetResponse(requestStr);
-
+        return response;
     }
 
     /// <summary>
@@ -81,23 +114,30 @@ public class ServerConnector
     /// <returns></returns>
     private String GetResponse(String requestString)
     {
-        WebRequest request = (WebRequest)WebRequest.Create(new Uri(Server_Url));
-        request.ContentType = "application/json";
-        request.Method = "POST";
-
-        using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+        try
         {
-            streamWriter.Write(requestString);
-            streamWriter.Flush();
-            streamWriter.Close();
-        }
+            WebRequest request = (WebRequest)WebRequest.Create(new Uri(Server_Url));
+            request.ContentType = "application/json";
+            request.Method = "POST";
+            Debug.Write(requestString);
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                streamWriter.Write(requestString);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
 
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        String requestResult = "";
-        using (var streamReader = new StreamReader(response.GetResponseStream()))
-        {
-            requestResult = streamReader.ReadToEnd();
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            String requestResult = "";
+            using (var streamReader = new StreamReader(response.GetResponseStream()))
+            {
+                requestResult = streamReader.ReadToEnd();
+            }
+            return requestResult;
         }
-        return requestResult;
+        catch (Exception exception)
+        {
+            return requestString + "FEHLER";
+        }
     }
 }

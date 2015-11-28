@@ -25,7 +25,7 @@ public partial class _Default : System.Web.UI.Page
     /// </summary>
     /// <returns></returns>
     [WebMethod]
-    public static List<Standort> GetMessungen()
+    public static Messungsliste GetMessungen()
     {
         Messungsliste messungen = new Messungsliste();
         JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -37,7 +37,7 @@ public partial class _Default : System.Web.UI.Page
             orte.Add(mw.Standort);
         }
 
-        return orte;
+        return messungen;
     }
 
 }

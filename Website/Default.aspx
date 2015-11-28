@@ -27,6 +27,7 @@
     <script>
         //Member für Heatmap
         var feld = [];
+        var auswahl ="lautstaerke"
         //Funktion ladet Basemap mit Leaflet
         //Gibt ein Objekt des typs Map zurück
         function loadBasemap() {
@@ -110,8 +111,31 @@
             
             
             for (i = 0; i < resp.length; i++) {
-                createPin(resp[i].Longitude, resp[i].Latitude);
-                feld[i] = [resp[i].Longitude, resp[i].Latitude,0.8];
+                createPin(resp[i].Standort.Longitude, resp[i].Standort.Latitude);
+
+                if (auswahl == "anzahl")
+                {
+                    fillHeatMapDataAnzahl(resp[i]);
+                }
+                else if (auswahl == "lautstaerke")
+                {
+                    fillHeatMapDataLaut(resp[i]);
+                }
+                var intense = 0;
+                if (resp[i].Wert >= 80)
+                {
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.8];
+                }
+                else if (resp[i].Wert >= 60)
+                {
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.6];
+                } else if (resp[i].Wert >= 40) {
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.4];
+                }
+                else if (resp[i].Wert < 40) {
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.1];
+                }
+                
                 
 
             }
@@ -125,6 +149,29 @@
 
         }
 
+        function fillHeatMapDataAnzahl(data) {
+
+            feld[i] = [data.Standort.Longitude, data.Standort.Latitude, 0.8];
+        }
+
+        function fillHeatMapDataAnzahl(data)
+        {
+            var intense = 0;
+            if (data.Wert >= 80) {
+                intense = 0.8;
+            }
+            else if (resp[i].Wert >= 60) {
+                intense = 0.6;
+            } else if (resp[i].Wert >= 40) {
+                intense = 0.4;
+            }
+            else if (resp[i].Wert < 40) {
+                intense = 0.1;
+            }
+            feld[i] = [data.Standort.Longitude, data.Standort.Latitude, intense];
+
+
+        }
         //Funktion erstellt und fügt HeatMap in die Map ein
         function loadHeatMap(feld) {
             var heat = L.heatLayer(

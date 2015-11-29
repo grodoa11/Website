@@ -31,12 +31,6 @@ public partial class _Default : System.Web.UI.Page
         JavaScriptSerializer serializer = new JavaScriptSerializer();
         messungen.LoadFromSOS();
 
-        List<Standort> orte = new List<Standort>();
-        foreach(Messwert mw in messungen)
-        {
-            orte.Add(mw.Standort);
-        }
-
         return messungen;
     }
 

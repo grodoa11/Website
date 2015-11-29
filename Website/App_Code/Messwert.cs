@@ -26,6 +26,7 @@ namespace AppCode
     {
         public Double Wert { get; set; }
         public DateTime ZeitpunktDerMessung { get; set; }
+        public String ZeitpunktForJavascript { get; set; }
         public ArtDerMessung ArtDerMessung { get; set; }
         public Standort Standort { get; set; }
         public int ID { get; set; }

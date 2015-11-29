@@ -120,9 +120,11 @@ namespace AppCode
                 mw.Standort = new Standort {Longitude = x, Latitude = y};
                 mw.ArtDerMessung = ArtDerMessung.Einfachmessung;
                 mw.ZeitpunktDerMessung = observation.resultTime;
+                mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
+                                            observation.resultTime.ToShortTimeString();
                 mw.Wert = observation.result.value;
                 //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
-                this.m_Messwerte.Add(new Messwert { Standort = new Standort { Longitude = x, Latitude = y } });
+                this.m_Messwerte.Add(mw);
                 
             }
             allResponses += "";

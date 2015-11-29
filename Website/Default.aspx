@@ -27,7 +27,16 @@
     <script>
         //Member für Heatmap
         var feld = [];
-        var auswahl ="lautstaerke"
+        var auswahl = "lautstaerke";
+
+        //Eigener Marker mit Informationen wie Wert
+        SoundCheckMarker = L.Marker.extend({
+            options: {
+                Wert: 'Wert',
+                Zeitpunkt: 'Zeitpunkt'
+            }
+        });
+
         //Funktion ladet Basemap mit Leaflet
         //Gibt ein Objekt des typs Map zurück
         function loadBasemap() {
@@ -111,7 +120,8 @@
             
             
             for (i = 0; i < resp.length; i++) {
-                createPin(resp[i].Standort.Longitude, resp[i].Standort.Latitude);
+
+                createPin(resp[i]);
 
                 if (auswahl == "anzahl")
                 {
@@ -119,7 +129,7 @@
                 }
                 else if (auswahl == "lautstaerke")
                 {
-                    fillHeatMapDataLaut(resp[i]);
+                    //fillHeatMapDataLaut(resp[i]);
                 }
                 var intense = 0;
                 if (resp[i].Wert >= 80)
@@ -180,9 +190,22 @@
         }
 
         //Funktion erstellt den Pin an long und lat
-        function createPin(long, lat) {
-            L.marker([long, lat]).addTo(map);
+        function createPin(obj) {
+            var punkt = [obj.Standort.Longitude, obj.Standort.Latitude];
+            //Erstelle eigenen Marker mit dem am Beginn deklarierten Objekt
+            var marker = new SoundCheckMarker(punkt, {
+                title: obj.Wert + " db",
+                Wert: obj.Wert,
+                Zeitpunkt: obj.ZeitpunktDerMessung
+            });
+
+            //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
+            marker.bindPopup("<b>Messung</b><br><b>Messzeitpunkt</b>: " + obj.ZeitpunktForJavascript + " <br>" +
+                "<b>Lautstärke</b>: " + obj.Wert +" db").openPopup();
+            marker.addTo(map);
         }
+
+
 
         function neuerFilter() {
             var startdatum = document.getElementById("startDatum").value;

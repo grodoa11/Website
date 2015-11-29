@@ -134,16 +134,16 @@
                 var intense = 0;
                 if (resp[i].Wert >= 80)
                 {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.8];
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.95];
                 }
                 else if (resp[i].Wert >= 60)
                 {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.6];
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.85];
                 } else if (resp[i].Wert >= 40) {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.4];
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.8];
                 }
                 else if (resp[i].Wert < 40) {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.1];
+                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.75];
                 }
                 
                 

@@ -103,9 +103,32 @@ namespace AppCode
             return messungenGefiltert;
         }
 
+        /// <summary>
+        /// Methode ladet SOS Werte ab dem 1.1.2015
+        /// </summary>
         public void LoadFromSOS()
         {
-            String jsonStr = m_Con.GetObservation();
+            GetObservation(new DateTime(2015, 01, 01), DateTime.Now);
+        }
+
+        /// <summary>
+        /// Methode ladet SOS Werte zwischen den übergegebenen Zeitpunkten
+        /// </summary>
+        /// <param name="startDate">Ab wann Messungen geladen werden</param>
+        /// <param name="endDate">Bis wann Messungen geladen werden</param>
+        public void LoadFromSOS(DateTime startDate, DateTime endDate)
+        {
+            GetObservation(startDate, endDate);
+        }
+
+        /// <summary>
+        /// Methode führt den SOS Call über das Objekt Server Connector aus
+        /// </summary>
+        /// <param name="startDate">Ab wann Messungen geladen werden</param>
+        /// <param name="endDate">Bis wann Messungen geladen werden</param>
+        private void GetObservation(DateTime startDate, DateTime endDate)
+        {
+            String jsonStr = m_Con.GetObservation(startDate, endDate);
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
 
@@ -117,7 +140,7 @@ namespace AppCode
                 Single x = geometry[0];
                 Single y = geometry[1];
                 Messwert mw = new Messwert();
-                mw.Standort = new Standort {Longitude = x, Latitude = y};
+                mw.Standort = new Standort { Longitude = x, Latitude = y };
                 mw.ArtDerMessung = ArtDerMessung.Einfachmessung;
                 mw.ZeitpunktDerMessung = observation.resultTime;
                 mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
@@ -125,9 +148,8 @@ namespace AppCode
                 mw.Wert = observation.result.value;
                 //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
                 this.m_Messwerte.Add(mw);
-                
+
             }
-            allResponses += "";
         }
     }
 

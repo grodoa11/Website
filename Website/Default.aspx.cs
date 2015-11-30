@@ -34,4 +34,28 @@ public partial class _Default : System.Web.UI.Page
         return messungen;
     }
 
+    /// <summary>
+    /// @Author: Dominik Sammer
+    /// @Date: 29.11.2015
+    /// Endpoint für Filter Funktion
+    /// </summary>
+    /// <param name="startdatum">Ab wann Messungen kommen</param>
+    /// <param name="enddatum">Bis wann Messungen kommen</param>
+    /// <returns></returns>
+    [WebMethod]
+    public static Messungsliste GetMessungenFiltered(DateTime startdatum, DateTime enddatum)
+    {
+        if (startdatum > enddatum)
+        {
+            //Falsche Eingabe
+            throw new Exception("Fehler! Enddatum kleiner als Startdatum");
+        }
+        Messungsliste messungen = new Messungsliste();
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        messungen.Clear();
+        messungen.LoadFromSOS(startdatum, enddatum);
+
+        return messungen;
+    }
+
 }

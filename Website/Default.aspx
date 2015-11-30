@@ -28,6 +28,7 @@
         //Member für Heatmap
         var feld = [];
         var auswahl = "lautstaerke";
+        var points = [];
 
         //Eigener Marker mit Informationen wie Wert
         SoundCheckMarker = L.Marker.extend({
@@ -50,7 +51,6 @@
             var northEast = L.latLng('49.06306925171648', '17.523193359374996');
 
             var bounds = L.latLngBounds(southWest, northEast);
-
             map = L.map('map', {
                 zoomControl: false,
                 //minZoom: 8,
@@ -71,7 +71,6 @@
                 tms: false,
                 detectRetina: true
             }).addTo(map);
-
 
             //Open Street Map für Testzwecke
             //var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -101,6 +100,8 @@
                 dataType: "json",
                 success: function (msg) {
                     try {
+                        //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
+                        L.control.mousePosition().addTo(map);
                         handleResponse(msg.d);
                     } catch (ex) {
                         alert(ex);
@@ -116,9 +117,7 @@
         //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
         //befüllt die Daten für Heatmap
         function handleResponse(resp) {
-            
-            
-            
+
             for (i = 0; i < resp.length; i++) {
 
                 createPin(resp[i]);
@@ -149,8 +148,7 @@
                 
 
             }
-            //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
-            L.control.mousePosition().addTo(map);
+
             //Fügt die HeatMap hinzu
             loadHeatMap(feld);
 
@@ -185,8 +183,9 @@
         //Funktion erstellt und fügt HeatMap in die Map ein
         function loadHeatMap(feld) {
             var heat = L.heatLayer(
-                            feld
-                        , { radius: 25, maxZoom:14, blur:15}).addTo(map);
+                feld, { radius: 25, maxZoom: 14, blur: 15 });
+            points.push(heat);
+                heat.addTo(map);
         }
 
         //Funktion erstellt den Pin an long und lat
@@ -198,7 +197,7 @@
                 Wert: obj.Wert,
                 Zeitpunkt: obj.ZeitpunktDerMessung
             });
-
+            points.push(marker);
             //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
             marker.bindPopup("<b>Messung</b><br><b>Messzeitpunkt</b>: " + obj.ZeitpunktForJavascript + " <br>" +
                 "<b>Lautstärke</b>: " + obj.Wert +" db").openPopup();
@@ -210,18 +209,24 @@
         function neuerFilter() {
             var startdatum = document.getElementById("startDatum").value;
             var enddatum = document.getElementById("endDatum").value;
+
+            if (startdatum > enddatum) {
+                alert("Fehler! Startdatum muss kleiner als Enddatum sein");
+                return 0;
+            }
             var obj = new Object();
             obj.startdatum = startdatum;
             obj.enddatum = enddatum;
+            removeMarker();
             $.ajax({
                 type: "POST",
-                url: "Default.aspx/GetMessungenGefiltert",
+                url: "Default.aspx/GetMessungenFiltered",
                 data: JSON.stringify(obj),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (msg) {
                     try {
-                        alert(msg);
+                        handleResponse(msg.d);
                     } catch (ex) {
                         alert(ex);
                     }
@@ -229,6 +234,12 @@
                 }
             }
             );
+        }
+
+        function removeMarker() {
+            for (var i = 0; i < points.length; i++) {
+                map.removeLayer(points[i]);
+            }
         }
 
 

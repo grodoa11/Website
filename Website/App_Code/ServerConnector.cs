@@ -67,8 +67,10 @@ public class ServerConnector
     /// @Date: 26.11.2015
     /// </summary>
     /// <returns></returns>
-    public String GetObservation()
+    public String GetObservation(DateTime dt1, DateTime dt2)
     {
+        String start = CreateSOSDateFormat(dt1);
+        String end = CreateSOSDateFormat(dt2);
 
         String requestStr = "{" +
   "\"request\": \"GetObservation\"," +
@@ -97,12 +99,26 @@ public class ServerConnector
     "{\"during\": {" +
         "\"ref\": \"om:phenomenonTime\"," +
         "\"value\": [" +
-          "\"2012-11-19T14:00:00+01:00\"," +
-          "\"2016-11-19T14:05:00+01:00\"" +
+          "\""+start+"\"," +
+          "\""+end+"\"" +
         "]}}]}";
+       
 
         String response = GetResponse(requestStr);
         return response;
+    }
+
+    /// <summary>
+    /// Methode erstellt das Format für SOS.
+    /// Datum sieht immer aus: 2012-11-19T14:00:00+01:00
+    /// @Author: Dominik Sammer
+    /// @Date: 29.11.2015
+    /// </summary>
+    /// <param name="dt">Datum das umgewandelt wird</param>
+    /// <returns>String im richtigen Format</returns>
+    private String CreateSOSDateFormat(DateTime dt)
+    {
+        return String.Format("{0:s}", dt) + String.Format("{0:zzz}", dt);
     }
 
     /// <summary>

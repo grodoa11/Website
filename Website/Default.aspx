@@ -28,7 +28,12 @@
         //Member für Heatmap
         var feld = [];
         var auswahl = "lautstaerke";
+        var testmsg;
+        var pointsPoint = [];
         var points = [];
+        var punkttest;
+        var lautst;
+        var anz;
 
         //Eigener Marker mit Informationen wie Wert
         SoundCheckMarker = L.Marker.extend({
@@ -91,7 +96,7 @@
         */
         function loadMeasurements() {
             map = loadBasemap();
-            
+
             //Hole Messungen mit AJAX von der Default.aspx.cs
             $.ajax({
                 type: "POST",
@@ -102,7 +107,8 @@
                     try {
                         //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
                         L.control.mousePosition().addTo(map);
-                        handleResponse(msg.d);
+                        //handleResponse(msg.d);
+                        testmsg = msg.d;
                     } catch (ex) {
                         alert(ex);
                     }
@@ -119,64 +125,48 @@
         function handleResponse(resp) {
 
             for (i = 0; i < resp.length; i++) {
+                if (auswahl == "anzahl") {
+                    fillHeatMapDataAnzahl(resp[i], i);
+                    loadHeatMap(feld);
+                }
+                else if (auswahl == "lautstaerke") {
+                    
+                    fillHeatMapDataLaut(resp[i], i);
+                    //Fügt die HeatMap hinzu
+                    
+                }
+                else if (auswahl == "punkte") {
+                    createPin(resp[i], i);
 
-                createPin(resp[i]);
-
-                if (auswahl == "anzahl")
-                {
-                    fillHeatMapDataAnzahl(resp[i]);
                 }
-                else if (auswahl == "lautstaerke")
-                {
-                    //fillHeatMapDataLaut(resp[i]);
-                }
-                var intense = 0;
-                if (resp[i].Wert >= 80)
-                {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.95];
-                }
-                else if (resp[i].Wert >= 60)
-                {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.85];
-                } else if (resp[i].Wert >= 40) {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.8];
-                }
-                else if (resp[i].Wert < 40) {
-                    feld[i] = [resp[i].Standort.Longitude, resp[i].Standort.Latitude, 0.75];
-                }
-                
-                
-
             }
-
-            //Fügt die HeatMap hinzu
-            loadHeatMap(feld);
-
-
+            if (auswahl == "lautstaerke")
+            {
+                loadHeatMap(feld);
+            }
             console.log("test");
 
         }
 
-        function fillHeatMapDataAnzahl(data) {
+        function fillHeatMapDataAnzahl(resp,i) {
 
             feld[i] = [data.Standort.Longitude, data.Standort.Latitude, 0.8];
         }
 
-        function fillHeatMapDataAnzahl(data)
-        {
+        function fillHeatMapDataLaut(resp, i) {
+            
             var intense = 0;
-            if (data.Wert >= 80) {
-                intense = 0.8;
+            if (resp.Wert >= 80) {
+                feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.95];
             }
-            else if (resp[i].Wert >= 60) {
-                intense = 0.6;
-            } else if (resp[i].Wert >= 40) {
-                intense = 0.4;
+            else if (resp.Wert >= 60) {
+                feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.85];
+            } else if (resp.Wert >= 40) {
+                feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.8];
             }
-            else if (resp[i].Wert < 40) {
-                intense = 0.1;
+            else if (resp.Wert < 40) {
+                feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.75];
             }
-            feld[i] = [data.Standort.Longitude, data.Standort.Latitude, intense];
 
 
         }
@@ -184,8 +174,10 @@
         function loadHeatMap(feld) {
             var heat = L.heatLayer(
                 feld, { radius: 25, maxZoom: 14, blur: 15 });
-            points.push(heat);
-                heat.addTo(map);
+            //points.push(heat);
+            lautst = heat;
+            anz = heat;
+            heat.addTo(map);
         }
 
         //Funktion erstellt den Pin an long und lat
@@ -197,10 +189,11 @@
                 Wert: obj.Wert,
                 Zeitpunkt: obj.ZeitpunktDerMessung
             });
-            points.push(marker);
+            pointsPoint.push(marker);
+            punkttest = marker;
             //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
             marker.bindPopup("<b>Messung</b><br><b>Messzeitpunkt</b>: " + obj.ZeitpunktForJavascript + " <br>" +
-                "<b>Lautstärke</b>: " + obj.Wert +" db").openPopup();
+                "<b>Lautstärke</b>: " + obj.Wert + " db").openPopup();
             marker.addTo(map);
         }
 
@@ -236,12 +229,48 @@
             );
         }
 
-        function removeMarker() {
-            for (var i = 0; i < points.length; i++) {
-                map.removeLayer(points[i]);
+        function removeMarker(layer) {
+            for (var i = 0; i < pointsPoint.length; i++) {
+            map.removeLayer(pointsPoint[i]);
+            
             }
         }
 
+        function removeOverlay(layer) {
+                map.removeLayer(layer); 
+        }
+
+        function drawOverlay(text) {
+            var checked1 = document.getElementById("check1");
+            var checked2 = document.getElementById("check2");
+            var checked3 = document.getElementById("check3");
+            
+            if (text == "Heatmap")
+            {
+                
+                if (checked1.checked) {
+                    
+                    
+                auswahl = "lautstaerke";
+                handleResponse(testmsg);
+                }
+                if (!checked1.checked) {
+                    removeOverlay(lautst);
+                }
+            }
+            
+            if (text == "Punkte") {
+                if (checked2.checked) {
+                    
+                    auswahl = "punkte";
+                    handleResponse(testmsg);
+                }
+                if(!checked2.checked) {
+                    removeMarker(punkttest);
+                }
+
+            }
+        }
 
     </script>
     <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
@@ -281,6 +310,24 @@
                     <input type="date" class="input-sm" id="endDatum" /></td>
                 <td>
                     <input type="button" class="btn-success" value="Filter eingeben" onclick="neuerFilter()" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <fieldset>
+                        <label for="check1">
+                            <input type="checkbox" name="view" value="Heatmap" id="check1" onclick="drawOverlay(this.value)">
+                            Heatmap
+                        </label>
+                        <label for="check2">
+                            <input type="checkbox" name="view" value="Punkte" id="check2" onclick="drawOverlay(this.value)">
+                            Punkte
+                        </label>
+                        <label for="check3">
+                            <input type="checkbox" name="view" value="Anzahl" id="check3" onclick="drawOverlay(this.value)">
+                            Anzahl
+                        </label>
+                    </fieldset>
+                </td>
             </tr>
         </table>
     </div>

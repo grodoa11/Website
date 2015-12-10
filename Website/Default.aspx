@@ -108,7 +108,8 @@
                         //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
                         L.control.mousePosition().addTo(map);
                         //handleResponse(msg.d);
-                        testmsg = msg.d;
+                        testmsg = msg.d;                        
+                        drawOverlay("Heatmap");
                     } catch (ex) {
                         alert(ex);
                     }
@@ -127,7 +128,7 @@
             for (i = 0; i < resp.length; i++) {
                 if (auswahl == "anzahl") {
                     fillHeatMapDataAnzahl(resp[i], i);
-                    loadHeatMap(feld);
+                    //loadHeatMap(feld);
                 }
                 else if (auswahl == "lautstaerke") {
                     
@@ -143,6 +144,7 @@
             if (auswahl == "lautstaerke")
             {
                 loadHeatMap(feld);
+                
             }
             console.log("test");
 
@@ -253,6 +255,7 @@
                     
                 auswahl = "lautstaerke";
                 handleResponse(testmsg);
+                feld = [];
                 }
                 if (!checked1.checked) {
                     removeOverlay(lautst);
@@ -315,7 +318,7 @@
                 <td>
                     <fieldset>
                         <label for="check1">
-                            <input type="checkbox" name="view" value="Heatmap" id="check1" onclick="drawOverlay(this.value)">
+                            <input type="checkbox" name="view" value="Heatmap" checked="checked" id="check1" onclick="drawOverlay(this.value)">
                             Heatmap
                         </label>
                         <label for="check2">

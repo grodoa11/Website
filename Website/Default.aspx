@@ -134,6 +134,7 @@
                     
                     fillHeatMapDataLaut(resp[i], i);
                     //Fügt die HeatMap hinzu
+
                     
                 }
                 else if (auswahl == "punkte") {
@@ -143,7 +144,7 @@
             }
             if (auswahl == "lautstaerke")
             {
-                loadHeatMap(feld);
+                loadHeatMap();
                 
             }
             console.log("test");
@@ -173,7 +174,7 @@
 
         }
         //Funktion erstellt und fügt HeatMap in die Map ein
-        function loadHeatMap(feld) {
+        function loadHeatMap() {
             var heat = L.heatLayer(
                 feld, { radius: 25, maxZoom: 14, blur: 15 });
             //points.push(heat);
@@ -221,7 +222,9 @@
                 dataType: "json",
                 success: function (msg) {
                     try {
+                        testmsg = msg.d;
                         handleResponse(msg.d);
+                        
                     } catch (ex) {
                         alert(ex);
                     }
@@ -236,10 +239,13 @@
             map.removeLayer(pointsPoint[i]);
             
             }
+            pointsPoint = [];
         }
 
         function removeOverlay(layer) {
-                map.removeLayer(layer); 
+            map.removeLayer(layer);
+            feld = [];
+
         }
 
         function drawOverlay(text) {
@@ -255,7 +261,7 @@
                     
                 auswahl = "lautstaerke";
                 handleResponse(testmsg);
-                feld = [];
+                
                 }
                 if (!checked1.checked) {
                     removeOverlay(lautst);

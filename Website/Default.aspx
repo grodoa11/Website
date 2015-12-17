@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title></title>
+    <title>Soundcheck | Karte</title>
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -33,21 +33,22 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="libraries/MousePosition/css/L.Control.MousePosition.css">
-
+        
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
+    
 </head>
 <body onload="loadMeasurements()">
+    <!-- Navigation -->
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">SoundCheck</a>
+                <a class="navbar-brand" href="#">Soundcheck</a>
             </div>
             <div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
+                    <li ><a href="#" class="active">Lärmkarte</a></li>
+                    <li><a href="Info.html">Info</a></li>
                 </ul>
             </div>
         </div>

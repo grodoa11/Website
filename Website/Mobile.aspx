@@ -1,10 +1,10 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="_Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Mobile.aspx.cs" Inherits="Mobile" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title></title>
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
@@ -37,23 +37,8 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>
-<body onload="loadMeasurements()">
-    <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">SoundCheck</a>
-            </div>
-            <div>
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div>
+<body onload="loadMeasurementsMobile()">
+     <div style="visibility:hidden">
         <table class="table" style="width: 50%">
             <tr>
                 <td>Zeitraum einstellen von dem Messungen geladen werden</td>
@@ -84,10 +69,10 @@
             </tr>
         </table>
     </div>
-
     <form id="form1" runat="server">
-        <div id="map" class="map"></div>
-
+    <div id="map" class="map">
+    
+    </div>
     </form>
 </body>
 </html>

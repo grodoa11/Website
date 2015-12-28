@@ -1,11 +1,11 @@
 ﻿//Member für Heatmap
 var feld = [];
-var auswahl = "lautstaerke";
+var auswahl = "heatmap";
 var testmsg;
 var pointsPoint = [];
 var points = [];
-var punkttest;
-var lautst;
+var punktLayer;
+var heatmap;
 var anz;
 
 //Eigener Marker mit Informationen wie Wert
@@ -30,7 +30,8 @@ function loadBasemap() {
 
     var bounds = L.latLngBounds(southWest, northEast);
     map = L.map('map', {
-        zoomControl: false,
+        zoomControl: false
+        
         //minZoom: 8,
         //maxZoom: 18,
         //maxBounds: bounds
@@ -68,6 +69,7 @@ Dafür wird folgendermaßen vorgegangen:
     -> Speichere Messpunkte als Pin in die Karte
 */
 function loadMeasurements() {
+    alert("ladet measurments normal");
     map = loadBasemap();
     
     //Hole Messungen mit AJAX von der Default.aspx.cs
@@ -80,10 +82,10 @@ function loadMeasurements() {
             try {
                 //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
                 L.control.mousePosition().addTo(map);
-                //handleResponse(msg.d);
+                
                 testmsg = msg.d;
                 
-                drawOverlay("Heatmap");
+                drawOverlay("heatmap", true);
             } catch (ex) {
                 alert(ex);
                 
@@ -92,13 +94,20 @@ function loadMeasurements() {
         }
     }
     );
+    
+    
+    
 
 }
 
 
 function loadMeasurementsMobile() {
+    
     map = loadBasemap();
-    alert("is here");
+    var heightmob = $(window).height();
+    document.getElementById("map").style.height = heightmob;
+    $(window).trigger('resize');
+    alert(heightmob);
     //Hole Messungen mit AJAX von der Default.aspx.cs
     $.ajax({
         type: "POST",
@@ -107,11 +116,11 @@ function loadMeasurementsMobile() {
         dataType: "json",
         success: function (msg) {
             try {
-                alert("test");
-                //handleResponse(msg.d);
+                
+                
                 testmsg = msg.d;
                 
-                drawOverlay("mobile");
+                drawOverlay("mobile", true);
             } catch (ex) {
                 alert(ex);
             }
@@ -119,6 +128,7 @@ function loadMeasurementsMobile() {
         }
     }
     );
+    
 
 }
 
@@ -126,12 +136,12 @@ function loadMeasurementsMobile() {
 //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
 //befüllt die Daten für Heatmap
 function handleResponse(resp) {
-    alert("is here");
+    
     for (i = 0; i < resp.length; i++) {
 
         if (auswahl == "mobile")
         {
-            alert("is here");
+            
             createPin(resp[i], i);
             fillHeatMapDataLaut(resp[i], i);
 
@@ -140,19 +150,18 @@ function handleResponse(resp) {
             fillHeatMapDataAnzahl(resp[i], i);
             //loadHeatMap(feld);
         }
-        else if (auswahl == "lautstaerke") {
-
+        else if (auswahl == "heatmap") {
+           
             fillHeatMapDataLaut(resp[i], i);
-            //Fügt die HeatMap hinzu
+            
 
 
         }
         else if (auswahl == "punkte") {
-            
-
+            createPin(resp[i], i);
         }
     }
-    if (auswahl == "lautstaerke"||auswahl=="mobile") {
+    if (auswahl == "heatmap" || auswahl == "mobile") {
         loadHeatMap();
 
     }
@@ -187,7 +196,7 @@ function loadHeatMap() {
     var heat = L.heatLayer(
         feld, { radius: 25, maxZoom: 14, blur: 15 });
     //points.push(heat);
-    lautst = heat;
+    heatmap = heat;
     anz = heat;
     heat.addTo(map);
 }
@@ -202,7 +211,7 @@ function createPin(obj) {
         Zeitpunkt: obj.ZeitpunktDerMessung
     });
     pointsPoint.push(marker);
-    punkttest = marker;
+    punktLayer = marker;
     //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
     marker.bindPopup("<b>Messung</b><br><b>Messzeitpunkt</b>: " + obj.ZeitpunktForJavascript + " <br>" +
         "<b>Lautstärke</b>: " + obj.Wert + " db").openPopup();
@@ -257,51 +266,40 @@ function removeOverlay(layer) {
 
 }
 
-function drawOverlay(text) {
+function drawOverlay(checkedAuswahl, isChecked) {
 
-    
-    
-    alert(document.baseURI);
-    var decideSite =document.baseURI.split("/");
-   
-    
-        var checked1 = document.getElementById("check1");
-        var checked2 = document.getElementById("check2");
-        var checked3 = document.getElementById("check3");
-    
-
-
-        if (text == "Heatmap") {
-
-            if (checked1.checked) {
-
-
-                auswahl = "lautstaerke";
-                handleResponse(testmsg);
-
-            }
-            if (!checked1.checked) {
-                removeOverlay(lautst);
-            }
-        }
-
-        if (text == "Punkte") {
-            if (checked2.checked) {
-
-                auswahl = "punkte";
-                handleResponse(testmsg);
-            }
-            if (!checked2.checked) {
-                removeMarker(punkttest);
-            }
-
-        }
-    
-
-        if (text == "mobile") {
+ 
+        if (checkedAuswahl=="mobile") {
             auswahl = "mobile";
             handleResponse(testmsg);
         }
+
+        else {
+            if (isChecked) {
+
+
+                auswahl = checkedAuswahl
+                handleResponse(testmsg);
+
+            }
+            if (isChecked==false) {
+                if (checkedAuswahl=="heatmap" || checkedAuswahl ==("anzahl")) {
+                    removeOverlay(heatmap);
+                }
+                
+                else {
+                    removeMarker(punktLayer);
+                }
+            }
+
+
+
+           
+        }
+        
+    
+
+        
 }
 
 

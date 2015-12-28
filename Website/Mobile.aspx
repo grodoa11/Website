@@ -18,8 +18,8 @@
 
     <style>
         #map {
-            height: 900px;
-            width: 75%;
+            height: 1080px;
+            width: 100%;
         }
     </style>
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
@@ -38,37 +38,6 @@
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
 </head>
 <body onload="loadMeasurementsMobile()">
-     <div style="visibility:hidden">
-        <table class="table" style="width: 50%">
-            <tr>
-                <td>Zeitraum einstellen von dem Messungen geladen werden</td>
-                <td>Von:
-                    <input type="date" class="input-sm" id="startDatum" /></td>
-                <td>Bis:
-                    <input type="date" class="input-sm" id="endDatum" /></td>
-                <td>
-                    <input type="button" class="btn-success" value="Filter eingeben" onclick="neuerFilter()" /></td>
-            </tr>
-            <tr>
-                <td>
-                    <fieldset>
-                        <label for="check1">
-                            <input type="checkbox" name="view" value="Heatmap" checked="checked" id="check1" onclick="drawOverlay(this.value)">
-                            Heatmap
-                        </label>
-                        <label for="check2">
-                            <input type="checkbox" name="view" value="Punkte" id="check2" onclick="drawOverlay(this.value)">
-                            Punkte
-                        </label>
-                        <label for="check3">
-                            <input type="checkbox" name="view" value="Anzahl" id="check3" onclick="drawOverlay(this.value)">
-                            Anzahl
-                        </label>
-                    </fieldset>
-                </td>
-            </tr>
-        </table>
-    </div>
     <form id="form1" runat="server">
     <div id="map" class="map">
     

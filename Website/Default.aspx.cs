@@ -30,7 +30,7 @@ public partial class _Default : System.Web.UI.Page
         Messungsliste messungen = new Messungsliste();
         JavaScriptSerializer serializer = new JavaScriptSerializer();
         messungen.LoadFromSOS();
-
+        
         return messungen;
     }
 

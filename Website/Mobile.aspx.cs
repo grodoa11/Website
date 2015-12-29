@@ -12,7 +12,11 @@ public partial class Mobile : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        Single lat = Convert.ToSingle(Request["lat"]);
+        Single lon = Convert.ToSingle(Request["long"]);
 
+        hiddenFieldLat.Value = "" + lat;
+        hiddenFieldLon.Value = "" + lon;
     }
     public Messungsliste Messungen { get; set; }
 

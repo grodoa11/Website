@@ -15,6 +15,14 @@ SoundCheckMarker = L.Marker.extend({
         Zeitpunkt: 'Zeitpunkt'
     }
 });
+console.log(window.location.origin + "/img/standort.png");
+//Eigenes Icon für den aktuellen Standort
+var currentPlaceIcon = L.icon({
+    
+        iconUrl: window.location.origin + "/img/standort.png",
+        iconSize: [40, 40]
+    
+});
 
 //Funktion ladet Basemap mit Leaflet
 //Gibt ein Objekt des typs Map zurück
@@ -69,7 +77,6 @@ Dafür wird folgendermaßen vorgegangen:
     -> Speichere Messpunkte als Pin in die Karte
 */
 function loadMeasurements() {
-    alert("ladet measurments normal");
     map = loadBasemap();
     
     //Hole Messungen mit AJAX von der Default.aspx.cs
@@ -102,12 +109,12 @@ function loadMeasurements() {
 
 
 function loadMeasurementsMobile() {
-    
     map = loadBasemap();
+    showCurrentPlace();
     var heightmob = $(window).height();
     document.getElementById("map").style.height = heightmob;
     $(window).trigger('resize');
-    alert(heightmob);
+
     //Hole Messungen mit AJAX von der Default.aspx.cs
     $.ajax({
         type: "POST",
@@ -130,6 +137,14 @@ function loadMeasurementsMobile() {
     );
     
 
+}
+function showCurrentPlace() {
+    var lat = document.getElementById("hiddenFieldLat").value;
+    var lon = document.getElementById("hiddenFieldLon").value;
+
+    var marker = L.marker([lat, lon], { icon: currentPlaceIcon });
+    marker.bindPopup("<b>Du bist hier</b>");
+    marker.addTo(map);
 }
 
 

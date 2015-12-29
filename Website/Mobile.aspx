@@ -36,12 +36,15 @@
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
+
 </head>
 <body onload="loadMeasurementsMobile()">
     <form id="form1" runat="server">
     <div id="map" class="map">
     
     </div>
+        <button onclick="showCurrentPlace">Show</button>
+        <asp:HiddenField ID="hiddenFieldLon" runat="server" />        <asp:HiddenField runat="server" ID="hiddenFieldLat"/>
     </form>
 </body>
 </html>

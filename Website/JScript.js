@@ -256,8 +256,11 @@ function neuerFilter() {
         success: function (msg) {
             try {
                 testmsg = msg.d;
-                handleResponse(msg.d);
-
+                //handleResponse(msg.d);
+                drawOverlay("heatmap", false);
+                drawOverlay("punkte", false);
+                drawOverlay("heatmap", true);
+                drawOverlay("punkte", true);
             } catch (ex) {
                 alert(ex);
             }

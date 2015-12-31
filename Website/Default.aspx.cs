@@ -34,6 +34,16 @@ public partial class _Default : System.Web.UI.Page
         return messungen;
     }
 
+    [WebMethod]
+    public static Messungsliste GetMessungenTimeTracking()
+    {
+        Messungsliste messungen = new Messungsliste();
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        messungen.LoadFromSOSTimeTracking();
+
+        return messungen;
+    }
+
     /// <summary>
     /// @Author: Dominik Sammer
     /// @Date: 29.11.2015

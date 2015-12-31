@@ -108,6 +108,49 @@ public class ServerConnector
         return response;
     }
 
+    public String GetObservationTimeTracking(DateTime dt1, DateTime dt2)
+    {
+        Console.WriteLine("geht hier her");
+        String start = CreateSOSDateFormat(dt1);
+        String end = CreateSOSDateFormat(dt2);
+
+        String requestStr = "{" +
+  "\"request\": \"GetObservation\"," +
+  "\"service\": \"SOS\"," +
+  "\"version\": \"2.0.0\"," +
+  "\"procedure\": [" +
+    "\"DecibelSensorTimeTracking\"" +
+  "]," +
+  "\"offering\": [" +
+    "\"DecibelSensorTimeTracking\"" +
+  "]," +
+  "\"observedProperty\": [" +
+    "\"AmbientSound\"]," +
+  "\"spatialFilter\": {" +
+    "\"bbox\": {" +
+      "\"ref\": \"om:featureOfInterest/sams:SF_SpatialSamplingFeature/sams:shape\"," +
+      "\"value\": {" +
+        "\"type\": \"Polygon\"," +
+        "\"coordinates\": [[[" +
+                          "46.28243,8.75061],[" +
+                          "49.06306925171648,8.75061],[" +
+                          "49.06306925171648,17.523193359374996],[" +
+                          "46.28243,17.523193359374996]," +
+                        "[46.28243,8.75061]]]}}}," +
+  "\"temporalFilter\": [" +
+    "{\"during\": {" +
+        "\"ref\": \"om:phenomenonTime\"," +
+        "\"value\": [" +
+          "\"" + start + "\"," +
+          "\"" + end + "\"" +
+        "]}}]}";
+
+        
+        String response = GetResponse(requestStr);
+        Console.WriteLine(response);
+        return response;
+    }
+
     /// <summary>
     /// Methode erstellt das Format für SOS.
     /// Datum sieht immer aus: 2012-11-19T14:00:00+01:00
@@ -153,7 +196,7 @@ public class ServerConnector
         }
         catch (Exception exception)
         {
-            return requestString + "FEHLER";
+            return exception+"\n"+requestString + " FEHLER";
         }
     }
 }

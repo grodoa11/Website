@@ -111,6 +111,11 @@ namespace AppCode
             GetObservation(new DateTime(2015, 01, 01), DateTime.Now);
         }
 
+        public void LoadFromSOSTimeTracking()
+        {
+            GetObservationTimeTracking(new DateTime(2015, 01, 01), DateTime.Now);
+        }
+
         /// <summary>
         /// Methode ladet SOS Werte zwischen den übergegebenen Zeitpunkten
         /// </summary>
@@ -159,6 +164,46 @@ namespace AppCode
                 Console.WriteLine("keine messungen");
             }
         }
+
+
+        private void GetObservationTimeTracking(DateTime startDate, DateTime endDate)
+        {
+            String jsonStr = m_Con.GetObservationTimeTracking(startDate, endDate);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
+
+            String allResponses = "";
+            try
+            {
+
+                foreach (Observation observation in helper.observations)
+                {
+                    //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
+                    List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
+                    Single x = geometry[0];
+                    Single y = geometry[1];
+                    Messwert mw = new Messwert();
+                    mw.Standort = new Standort { Longitude = x, Latitude = y };
+                    mw.ArtDerMessung = ArtDerMessung.Loggingmessung;
+                    mw.ZeitpunktDerMessung = observation.resultTime;
+                    mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
+                                                observation.resultTime.ToShortTimeString();
+                    mw.Wert = observation.result.value;
+
+                    //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
+                    this.m_Messwerte.Add(mw);
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine("keine messungen");
+            }
+        }
+
+
+
     }
 
 }

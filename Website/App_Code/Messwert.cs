@@ -31,6 +31,7 @@ namespace AppCode
         public Standort Standort { get; set; }
         public int ID { get; set; }
         public String Beschreibung { get; set; }
+        public List<Double> WertListe { get; set; }
 
         public override string ToString()
         {

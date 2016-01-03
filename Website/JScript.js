@@ -15,8 +15,8 @@ SoundCheckMarker = L.Marker.extend({
         Zeitpunkt: 'Zeitpunkt'
     }
 });
-console.log(window.location.origin + "/img/standort.png");
-//Eigenes Icon für den aktuellen Standort
+
+//Eigenes Icon für den aktuellen Standort (icon url zeigt durch window.location.origin immer auf die richtige Position)s
 var currentPlaceIcon = L.icon({
     
         iconUrl: window.location.origin + "/img/standort.png",

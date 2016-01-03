@@ -12,12 +12,19 @@ public partial class Mobile : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        Single lat = Convert.ToSingle(Request["lat"]);
-        Single lon = Convert.ToSingle(Request["long"]);
+        String lat = Request.QueryString.Get("lat");
+        String lon = Request.QueryString.Get("long");
 
-        hiddenFieldLat.Value = "" + lat;
-        hiddenFieldLon.Value = "" + lon;
-    }
+        if (lat == null || lon == null)
+        {
+            hiddenFieldLat.Value = "0";
+            hiddenFieldLon.Value = "0";
+        }
+        else { 
+            hiddenFieldLat.Value = "" + lat;
+            hiddenFieldLon.Value = "" + lon;
+        }
+}
     public Messungsliste Messungen { get; set; }
 
     [WebMethod]

@@ -196,7 +196,7 @@ public class ServerConnector
         }
         catch (Exception exception)
         {
-            return exception+"\n"+requestString + " FEHLER";
+            return exception+" "+requestString + " FEHLER";
         }
     }
 }

@@ -102,27 +102,27 @@ function loadMeasurements() {
     }
     );
     
-    $.ajax({
-        type: "POST",
-        url: "Default.aspx/GetMessungenTimeTracking",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (msg) {
-            try {
-                //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
-                L.control.mousePosition().addTo(map);
+    //$.ajax({
+    //    type: "POST",
+    //    url: "Default.aspx/GetMessungenTimeTracking",
+    //    contentType: "application/json; charset=utf-8",
+    //    dataType: "json",
+    //    success: function (msg) {
+    //        try {
+    //            //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
+    //            L.control.mousePosition().addTo(map);
 
-                testmsg = msg.d;
+    //            testmsg = msg.d;
 
-                alert(testmsg.length);
-            } catch (ex) {
-                alert(ex);
+    //            alert(testmsg.length);
+    //        } catch (ex) {
+    //            alert(ex);
 
-            }
-            //console.log(msg);
-        }
-    }
-    );
+    //        }
+    //        //console.log(msg);
+    //    }
+    //}
+    //);
     
 
 }

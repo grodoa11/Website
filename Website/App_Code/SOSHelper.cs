@@ -32,7 +32,7 @@ public class Observation
     public DateTime phenomenonTime { get; set; }
     public DateTime resultTime { get; set; }
     public Result result { get; set; }
-    public List<Result> resultList { get; set; }
+    //public List<Result> resultList { get; set; }
     
 }
 
@@ -41,7 +41,7 @@ public class FeatureOfInterest
     public Identifier identifier { get; set; }
     public Identifier value { get; set; }
     public Geometry geometry { get; set; }
-    public Name name { get; set; }
+    //public Name name { get; set; }
 
     
 }
@@ -49,7 +49,7 @@ public class FeatureOfInterest
 public class Name
     {
      public String uom { get; set; }
-     public double value { get; set; }
+     public String value { get; set; }
 }
 
 public class Result

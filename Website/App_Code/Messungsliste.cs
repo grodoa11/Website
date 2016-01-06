@@ -189,7 +189,30 @@ namespace AppCode
                     mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
                                                 observation.resultTime.ToShortTimeString();
                     mw.Wert = observation.result.value;
-
+                    mw.ID = new List<string>();
+                    String id = "";
+                    List<String> idparts = new List<string>();
+                    foreach (object item in (Array)observation.featureOfInterest.name)
+                    {
+                        
+                        if(item.GetType()==typeof(String))
+                        {
+                            idparts.Add(item.ToString());
+                        }
+                        Console.WriteLine(item.GetType());
+                        if(item.GetType()==typeof(Dictionary<String,object>))
+                        {
+                            Dictionary<String,object> dic = (Dictionary<String, object>)item;
+                            KeyValuePair<string, string> kp = (KeyValuePair<string, string>)dic["value"];
+                            idparts.Add(kp.Value);
+                        }
+                    }
+                    //id = idparts[0].Split('G')[1] + " " + idparts[1];
+                    
+                    //String[] nameparts = id.Split('(');
+                    //id = nameparts[0].Trim('I');
+                    //id.Trim('D', ')');
+                    //Console.WriteLine(id);
                     //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
                     this.m_Messwerte.Add(mw);
 

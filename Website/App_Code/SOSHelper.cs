@@ -41,16 +41,16 @@ public class FeatureOfInterest
     public Identifier identifier { get; set; }
     public Identifier value { get; set; }
     public Geometry geometry { get; set; }
-    //public Name name { get; set; }
+    public Object name { get; set; }
 
-    
+
 }
 
-public class Name
-    {
-     public String uom { get; set; }
-     public String value { get; set; }
-}
+//public class Name
+//    {
+//     public String uom { get; set; }
+//     public String value { get; set; }
+//}
 
 public class Result
 {

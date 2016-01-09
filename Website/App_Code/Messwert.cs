@@ -29,14 +29,14 @@ namespace AppCode
         public String ZeitpunktForJavascript { get; set; }
         public ArtDerMessung ArtDerMessung { get; set; }
         public Standort Standort { get; set; }
-        //public int ID { get; set; }
+        public String ID { get; set; }
         public String Beschreibung { get; set; }
+        public String Name { get; set; }
         //public List<Double> WertListe { get; set; }
-        public List<String> ID { get; set; }
 
         public override string ToString()
         {
-            return String.Format("Beschreibung: {0}, Messung: {1}, Zeitpunkt: {2}, Art der Messung: {3}",Beschreibung, Wert, ZeitpunktDerMessung, ArtDerMessung.ToString());
+            return String.Format("Beschreibung: {0}, Messung: {1}, Zeitpunkt: {2}, Art der Messung: {3}", Beschreibung, Wert, ZeitpunktDerMessung, ArtDerMessung.ToString());
         }
     }
 

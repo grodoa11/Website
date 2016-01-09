@@ -19,11 +19,13 @@ namespace AppCode
     {
         private List<Messwert> m_Messwerte;
         private ServerConnector m_Con;
+        private List<TimeTrackingMessung> m_track;
 
         public Messungsliste()
         {
             m_Messwerte = new List<Messwert>();
             m_Con = new ServerConnector();
+            m_track = new List<TimeTrackingMessung>();
         }
 
         public IEnumerator<Messwert> GetEnumerator()
@@ -111,9 +113,10 @@ namespace AppCode
             GetObservation(new DateTime(2015, 01, 01), DateTime.Now);
         }
 
-        public void LoadFromSOSTimeTracking()
+        public List<TimeTrackingMessung> LoadFromSOSTimeTracking()
         {
             GetObservationTimeTracking(new DateTime(2015, 01, 01), DateTime.Now);
+            return m_track;
         }
 
         /// <summary>
@@ -178,43 +181,46 @@ namespace AppCode
 
                 foreach (Observation observation in helper.observations)
                 {
-                    //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
-                    List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
-                    Single x = geometry[0];
-                    Single y = geometry[1];
-                    Messwert mw = new Messwert();
-                    mw.Standort = new Standort { Longitude = x, Latitude = y };
-                    mw.ArtDerMessung = ArtDerMessung.Loggingmessung;
-                    mw.ZeitpunktDerMessung = observation.resultTime;
-                    mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
-                                                observation.resultTime.ToShortTimeString();
-                    mw.Wert = observation.result.value;
-                    mw.ID = new List<string>();
-                    String id = "";
-                    List<String> idparts = new List<string>();
-                    foreach (object item in (Array)observation.featureOfInterest.name)
+                    object[] allnamparts = ((object[])observation.featureOfInterest.name);
+                    if (allnamparts.Length <= 3)
                     {
-                        
-                        if(item.GetType()==typeof(String))
-                        {
-                            idparts.Add(item.ToString());
-                        }
-                        Console.WriteLine(item.GetType());
-                        if(item.GetType()==typeof(Dictionary<String,object>))
-                        {
-                            Dictionary<String,object> dic = (Dictionary<String, object>)item;
-                            KeyValuePair<string, string> kp = (KeyValuePair<string, string>)dic["value"];
-                            idparts.Add(kp.Value);
-                        }
+                        //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
+                        List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
+                        Single x = geometry[0];
+                        Single y = geometry[1];
+                        Messwert mw = new Messwert();
+                        mw.Standort = new Standort { Longitude = x, Latitude = y };
+                        mw.ArtDerMessung = ArtDerMessung.Loggingmessung;
+                        mw.ZeitpunktDerMessung = observation.resultTime;
+                        mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
+                                                    observation.resultTime.ToShortTimeString();
+                        mw.Wert = observation.result.value;
+                        Dictionary<String, object> dict = ((Dictionary<String, object>)allnamparts[2]);
+                        mw.ID = allnamparts[0].ToString() + allnamparts[1].ToString() + "" + dict.SingleOrDefault(p => p.Key == "value").Value;
+                        //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
+                        this.m_Messwerte.Add(mw);
                     }
-                    //id = idparts[0].Split('G')[1] + " " + idparts[1];
-                    
-                    //String[] nameparts = id.Split('(');
-                    //id = nameparts[0].Trim('I');
-                    //id.Trim('D', ')');
-                    //Console.WriteLine(id);
-                    //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
-                    this.m_Messwerte.Add(mw);
+
+                }
+
+                foreach (Messwert mesw in m_Messwerte)
+                {
+                    if (m_track.Where(p => p.ID == mesw.ID).FirstOrDefault() == null)
+                    {
+                        m_track.Add(new TimeTrackingMessung
+                        {
+                            ID = mesw.ID,
+                            Beschreibung = mesw.Beschreibung,
+                            Messwerte = new List<Messwert>() {
+                            mesw
+                        }
+                        });
+                    }
+
+                    else
+                    {
+                        m_track.Where(p => p.ID == mesw.ID).FirstOrDefault().Messwerte.Add(mesw);
+                    }
 
                 }
             }

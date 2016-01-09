@@ -29,6 +29,25 @@ SoundCheckMarkerTrack = L.Marker.extend({
     }
 });
 
+var LeafIcon = L.Icon.extend({
+    options: {
+        
+        iconSize: [38, 95],
+        shadowSize: [50, 64],
+        iconAnchor: [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor: [-3, -76]
+    }
+});
+
+var myIcon = L.icon({
+    iconUrl: 'img/marker-icon_green.png',
+    
+    iconAnchor: [12, 40],
+    
+});
+
+
 //Eigenes Icon für den aktuellen Standort (icon url zeigt durch window.location.origin immer auf die richtige Position)s
 var currentPlaceIcon = L.icon({
 
@@ -328,10 +347,11 @@ function createPinTrack(obj) {
    "<div class='well'>" +
      werte +
    "</div></div>";
-    
+    var greenicon = new LeafIcon({ iconUrl: 'img/marker-icon_green.png' });
     var marker = new SoundCheckMarkerTrack(punkt, {
         title: obj.ID,
-        Wert_Zeitpunkt: werte
+        Wert_Zeitpunkt: werte,
+        icon: myIcon
     });
     pointsPointTrack.push(marker);
     punktLayerTrack = marker;

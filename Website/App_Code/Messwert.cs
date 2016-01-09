@@ -29,8 +29,9 @@ namespace AppCode
         public String ZeitpunktForJavascript { get; set; }
         public ArtDerMessung ArtDerMessung { get; set; }
         public Standort Standort { get; set; }
-        public int ID { get; set; }
+        public String ID { get; set; }
         public String Beschreibung { get; set; }
+        public String Name { get; set; }
         //public List<Double> WertListe { get; set; }
 
         public override string ToString()

@@ -41,7 +41,7 @@ public class FeatureOfInterest
     public Identifier identifier { get; set; }
     public Identifier value { get; set; }
     public Geometry geometry { get; set; }
-    //public Name name { get; set; }
+    public object name { get; set; }
 
     
 }

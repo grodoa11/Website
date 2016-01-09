@@ -11,6 +11,7 @@ using System.Web.Script.Serialization;
 public partial class _Default : System.Web.UI.Page
 {
     public Messungsliste Messungen { get; set; }
+    public List<TimeTrackingMessung> TrackList {get;set;}
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -35,13 +36,14 @@ public partial class _Default : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static Messungsliste GetMessungenTimeTracking()
+    public static List<TimeTrackingMessung> GetMessungenTimeTracking()
     {
         Messungsliste messungen = new Messungsliste();
+        List<TimeTrackingMessung> trackmes = new List<TimeTrackingMessung>();
         JavaScriptSerializer serializer = new JavaScriptSerializer();
-        messungen.LoadFromSOSTimeTracking();
+        trackmes=messungen.LoadFromSOSTimeTracking();
 
-        return messungen;
+        return trackmes;
     }
 
     /// <summary>

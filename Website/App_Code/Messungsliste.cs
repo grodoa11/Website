@@ -19,11 +19,13 @@ namespace AppCode
     {
         private List<Messwert> m_Messwerte;
         private ServerConnector m_Con;
+        private List<TimeTrackingMessung> m_track;
 
         public Messungsliste()
         {
             m_Messwerte = new List<Messwert>();
             m_Con = new ServerConnector();
+            m_track = new List<TimeTrackingMessung>();
         }
 
         public IEnumerator<Messwert> GetEnumerator()
@@ -111,9 +113,10 @@ namespace AppCode
             GetObservation(new DateTime(2015, 01, 01), DateTime.Now);
         }
 
-        public void LoadFromSOSTimeTracking()
+        public List<TimeTrackingMessung> LoadFromSOSTimeTracking()
         {
             GetObservationTimeTracking(new DateTime(2015, 01, 01), DateTime.Now);
+            return m_track;
         }
 
         /// <summary>
@@ -178,6 +181,8 @@ namespace AppCode
 
                 foreach (Observation observation in helper.observations)
                 {
+                    object[] allnamparts = ((object[])observation.featureOfInterest.name);
+                    if (allnamparts.Length <= 3) { 
                     //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
                     List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
                     Single x = geometry[0];
@@ -189,9 +194,27 @@ namespace AppCode
                     mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
                                                 observation.resultTime.ToShortTimeString();
                     mw.Wert = observation.result.value;
-
+                    Dictionary<String, object> dict = ((Dictionary<String, object>)allnamparts[2]);
+                        mw.ID = allnamparts[0].ToString() + allnamparts[1].ToString() +""+ dict.SingleOrDefault(p => p.Key == "value").Value;
                     //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
                     this.m_Messwerte.Add(mw);
+                    }
+
+                }
+
+                foreach(Messwert mesw in m_Messwerte)
+                {
+                    if(m_track.Where(p=>p.ID==mesw.ID).FirstOrDefault() ==null)
+                    {
+                        m_track.Add(new TimeTrackingMessung { ID = mesw.ID, Beschreibung = mesw.Beschreibung, Messwerte =new List<Messwert>() {
+                            mesw
+                        } });
+                    }
+
+                    else 
+                    {
+                        m_track.Where(p => p.ID == mesw.ID).FirstOrDefault().Messwerte.Add(mesw);
+                    }
 
                 }
             }

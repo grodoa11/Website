@@ -44,7 +44,8 @@
     
     </div>
         <button onclick="showCurrentPlace">Show</button>
-        <asp:HiddenField ID="hiddenFieldLon" runat="server" />        <asp:HiddenField runat="server" ID="hiddenFieldLat"/>
+        <asp:HiddenField ID="hiddenFieldLon" runat="server" />
+        <asp:HiddenField runat="server" ID="hiddenFieldLat"/>
     </form>
 </body>
 </html>

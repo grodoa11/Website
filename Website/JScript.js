@@ -1,10 +1,13 @@
 ﻿//Member für Heatmap
 var feld = [];
 var auswahl = "heatmap";
-var testmsg;
+var msgPoint;
+var msgTrack;
 var pointsPoint = [];
+var pointsPointTrack = [];
 var points = [];
 var punktLayer;
+var punktLayerTrack;
 var heatmap;
 var anz;
 
@@ -18,10 +21,10 @@ SoundCheckMarker = L.Marker.extend({
 
 //Eigenes Icon für den aktuellen Standort (icon url zeigt durch window.location.origin immer auf die richtige Position)s
 var currentPlaceIcon = L.icon({
-    
-        iconUrl: window.location.origin + "/img/standort.png",
-        iconSize: [40, 40]
-    
+
+    iconUrl: window.location.origin + "/img/standort.png",
+    iconSize: [40, 40]
+
 });
 
 //Funktion ladet Basemap mit Leaflet
@@ -39,7 +42,7 @@ function loadBasemap() {
     var bounds = L.latLngBounds(southWest, northEast);
     map = L.map('map', {
         zoomControl: false
-        
+
         //minZoom: 8,
         //maxZoom: 18,
         //maxBounds: bounds
@@ -78,7 +81,7 @@ Dafür wird folgendermaßen vorgegangen:
 */
 function loadMeasurements() {
     map = loadBasemap();
-    
+
     //Hole Messungen mit AJAX von der Default.aspx.cs
     $.ajax({
         type: "POST",
@@ -89,41 +92,41 @@ function loadMeasurements() {
             try {
                 //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
                 L.control.mousePosition().addTo(map);
-                
-                testmsg = msg.d;
-                
+
+                msgPoint = msg.d;
+
                 drawOverlay("heatmap", true);
             } catch (ex) {
                 alert(ex);
-                
+
             }
             //console.log(msg);
         }
     }
     );
-    
-    //$.ajax({
-    //    type: "POST",
-    //    url: "Default.aspx/GetMessungenTimeTracking",
-    //    contentType: "application/json; charset=utf-8",
-    //    dataType: "json",
-    //    success: function (msg) {
-    //        try {
-    //            //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
-    //            L.control.mousePosition().addTo(map);
 
-    //            testmsg = msg.d;
+    $.ajax({
+        type: "POST",
+        url: "Default.aspx/GetMessungenTimeTracking",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (msg) {
+            try {
+                //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
+                L.control.mousePosition().addTo(map);
 
-    //            alert(testmsg.length);
-    //        } catch (ex) {
-    //            alert(ex);
+                msgTrack = msg.d;
 
-    //        }
-    //        //console.log(msg);
-    //    }
-    //}
-    //);
-    
+                alert(msgTrack.length);
+            } catch (ex) {
+                alert(ex);
+
+            }
+            //console.log(msg);
+        }
+    }
+    );
+
 
 }
 
@@ -143,10 +146,10 @@ function loadMeasurementsMobile() {
         dataType: "json",
         success: function (msg) {
             try {
-                
-                
-                testmsg = msg.d;
-                
+
+
+                msgPoint = msg.d;
+
                 drawOverlay("mobile", true);
             } catch (ex) {
                 alert(ex);
@@ -155,7 +158,7 @@ function loadMeasurementsMobile() {
         }
     }
     );
-    
+
 
 }
 function showCurrentPlace() {
@@ -171,12 +174,11 @@ function showCurrentPlace() {
 //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
 //befüllt die Daten für Heatmap
 function handleResponse(resp) {
-    
-    for (i = 0; i < resp.length; i++) {
 
-        if (auswahl == "mobile")
-        {
-            
+    for (i = 0; i < resp.length; i++) {
+        
+        if (auswahl == "mobile") {
+
             createPin(resp[i], i);
             fillHeatMapDataLaut(resp[i], i);
 
@@ -186,14 +188,18 @@ function handleResponse(resp) {
             //loadHeatMap(feld);
         }
         else if (auswahl == "heatmap") {
-           
+
             fillHeatMapDataLaut(resp[i], i);
-            
+
 
 
         }
         else if (auswahl == "punkte") {
             createPin(resp[i], i);
+        }
+        else if (auswahl == "track") {
+            alert("kommt hier");
+            createPinTrack(resp[i], i);
         }
     }
     if (auswahl == "heatmap" || auswahl == "mobile") {
@@ -254,6 +260,39 @@ function createPin(obj) {
 }
 
 
+function createPinTrack(obj) {
+    
+    var punkt = [obj.Messwerte[0].Standort.Longitude, obj.Messwerte[0].Standort.Latitude];
+    //Erstelle eigenen Marker mit dem am Beginn deklarierten Objekt
+    var werte = "";
+    var zeitpkte = "";
+    
+    var list = obj.Messwerte.getEnumerator();
+    var count = 0;
+    while (list.moveNext())
+    {
+        count += 1;
+    }
+    alert(count + "");
+    //for (var i = 0; i < obj.Messwerte.getEnumerator.Count; i++) {
+    //    werte += obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktDerMessung + "\n";
+
+    //}
+    alert("ok3");
+    var marker = new SoundCheckMarker(punkt, {
+        title: obj.ID,
+        Wert_Zeitpunkt: werte
+    });
+    pointsPointTrack.push(marker);
+    punktLayerTrack = marker;
+    //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
+    marker.bindPopup("<b>TrackingMessung</b><br><b>Messzeitpunkt</b>: " + obj.Messwerte[i].ZeitpunktForJavascript + " <br>" +
+        "<b>Lautstärke</b>: " +
+        werte+"keine werte?").openPopup();
+    marker.addTo(map);
+}
+
+
 
 function neuerFilter() {
     var startdatum = document.getElementById("startDatum").value;
@@ -275,7 +314,7 @@ function neuerFilter() {
         dataType: "json",
         success: function (msg) {
             try {
-                testmsg = msg.d;
+                msgPoint = msg.d;
                 //handleResponse(msg.d);
                 drawOverlay("heatmap", false);
                 drawOverlay("punkte", false);
@@ -306,38 +345,39 @@ function removeOverlay(layer) {
 
 function drawOverlay(checkedAuswahl, isChecked) {
 
- 
-        if (checkedAuswahl=="mobile") {
-            auswahl = "mobile";
-            handleResponse(testmsg);
-        }
 
-        else {
-            if (isChecked) {
+    if (checkedAuswahl == "mobile") {
+        auswahl = "mobile";
+        handleResponse(msgPoint);
+    }
 
+    else {
+        if (isChecked) {
+            if (checkedAuswahl == "track") {
+                
+                auswahl = checkedAuswahl;
+                alert("geht track "+auswahl);
+                handleResponse(msgTrack);
+            }
+            else {
 
                 auswahl = checkedAuswahl
-                handleResponse(testmsg);
+                handleResponse(msgPoint);
 
             }
-            if (isChecked==false) {
-                if (checkedAuswahl=="heatmap" || checkedAuswahl ==("anzahl")) {
-                    removeOverlay(heatmap);
-                }
-                
-                else {
-                    removeMarker(punktLayer);
-                }
-            }
-
-
-
-           
         }
-        
-    
+        if (isChecked == false) {
+            if (checkedAuswahl == "heatmap" || checkedAuswahl == ("anzahl")) {
+                removeOverlay(heatmap);
+            }
 
-        
+            else if (checkedAuswahl == "track") {
+                removeMarker(punktLayerTrack);
+
+            }
+            else {
+                removeMarker(punktLayer);
+            }
+        }
+    }
 }
-
-

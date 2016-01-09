@@ -10,6 +10,7 @@ var punktLayer;
 var punktLayerTrack;
 var heatmap;
 var anz;
+var zaehlertimetracking = 0;
 
 //Eigener Marker mit Informationen wie Wert
 SoundCheckMarker = L.Marker.extend({
@@ -90,6 +91,8 @@ Dafür wird folgendermaßen vorgegangen:
 */
 function loadMeasurements() {
     map = loadBasemap();
+    var data = [1, 2, 3, 4];
+    var options = ["Decibels"];
 
     //Hole Messungen mit AJAX von der Default.aspx.cs
     $.ajax({
@@ -126,7 +129,6 @@ function loadMeasurements() {
 
                 msgTrack = msg.d;
 
-                alert(msgTrack.length);
             } catch (ex) {
                 alert(ex);
 
@@ -137,6 +139,47 @@ function loadMeasurements() {
     );
 
 
+}
+
+//Funktion zeichnet das Diagramm für die TimeTrackingMessung
+function drawDiagram(obj) {
+    console.log(obj);
+    var intervall = obj.Intervall;
+    var labs = [];
+    var werte = [];
+    if (obj.Messwerte.length < 10) {
+        for (var i = 0; i < obj.Messwerte.length; i++) {
+            werte[i] = obj.Messwerte[i].Wert;
+            labs[i] = 1 * i;
+        }
+    } else {
+        for (var i = 0; i < obj.Messwerte.length/2; i++) {
+            werte[i] = obj.Messwerte[i+1].Wert;
+            labs[i] = 1 * (i+1);
+        }
+    }
+
+    var ctx = document.getElementById("can" + obj.ID).getContext("2d");
+
+    var data = {
+        labels: labs,
+        datasets: [
+            {
+                label: "Messungen",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: werte
+            }
+        ]
+    };
+
+
+    var myLineChart = new Chart(ctx).Line(data);
+    zaehlertimetracking++;
 }
 
 
@@ -207,7 +250,6 @@ function handleResponse(resp) {
             createPin(resp[i], i);
         }
         else if (auswahl == "track") {
-            alert("length in handleresponse: " + resp.length);
             createPinTrack(resp[i]);
         }
     }
@@ -278,7 +320,14 @@ function createPinTrack(obj) {
     for (var i = 0; i < obj.Messwerte.length; i++) {
         werte =werte+ obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktForJavascript + "<br>";
     }
-   
+    //Anzeige der einzelnen Werte
+    var werteinGUI = "<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#collapseWerte' aria-expanded='false' aria-controls='collapseWerte'>" +
+  " Zeige einzelne Werte" +
+ "</button>" +
+ "<div class='collapse' id='collapseWerte'>" +
+   "<div class='well'>" +
+     werte +
+   "</div></div>";
     
     var marker = new SoundCheckMarkerTrack(punkt, {
         title: obj.ID,
@@ -289,8 +338,14 @@ function createPinTrack(obj) {
     
     //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
     marker.bindPopup("<b>TrackingMessung</b><br>" +
-        "Werte: <br>" +
-        werte ).openPopup();
+        "<canvas id='can" + obj.ID + "'></canvas>" +
+        "<br>" + werteinGUI).openPopup();
+    //Wenn auf den Pin geklickt wird, dann zeichne das Diagram, damit die Canvas Objekte schon da sind.
+    marker.on('click', function (e)
+    {
+        drawDiagram(obj);
+    });
+
     marker.addTo(map);
 }
 
@@ -361,7 +416,6 @@ function drawOverlay(checkedAuswahl, isChecked) {
             if (checkedAuswahl == "track") {
 
                 auswahl = checkedAuswahl;
-                alert("geht track " + auswahl);
                 handleResponse(msgTrack);
             }
             else {

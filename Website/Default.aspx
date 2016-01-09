@@ -24,6 +24,7 @@
     </style>
     <script src="http://openlayers.org/api/OpenLayers.js"></script>
     <script src="JScript.js"></script>
+    <script src="libraries/chart/Chart.js"></script>
 
 
     <script src="libraries/bootstrap/javascript/bootstrap.min.js"></script>
@@ -53,7 +54,7 @@
             </div>
         </div>
     </nav>
-
+    
     <div>
         <table class="table" style="width: 50%">
             <tr>

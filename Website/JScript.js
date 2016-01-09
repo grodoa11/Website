@@ -29,16 +29,6 @@ SoundCheckMarkerTrack = L.Marker.extend({
     }
 });
 
-var LeafIcon = L.Icon.extend({
-    options: {
-        
-        iconSize: [38, 95],
-        shadowSize: [50, 64],
-        iconAnchor: [22, 94],
-        shadowAnchor: [4, 62],
-        popupAnchor: [-3, -76]
-    }
-});
 
 var myIcon = L.icon({
     iconUrl: 'img/marker-icon_green.png',

@@ -16,6 +16,15 @@ SoundCheckMarker = L.Marker.extend({
     options: {
         Wert: 'Wert',
         Zeitpunkt: 'Zeitpunkt'
+        
+    }
+});
+
+SoundCheckMarkerTrack = L.Marker.extend({
+    options: {
+        Wert: 'Wert',
+        Zeitpunkt: 'Zeitpunkt',
+        color:'green'
     }
 });
 
@@ -174,7 +183,7 @@ function showCurrentPlace() {
 //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
 //befüllt die Daten für Heatmap
 function handleResponse(resp) {
-
+    
     for (i = 0; i < resp.length; i++) {
 
         if (auswahl == "mobile") {
@@ -198,8 +207,8 @@ function handleResponse(resp) {
             createPin(resp[i], i);
         }
         else if (auswahl == "track") {
-            alert("kommt hier");
-            createPinTrack(resp[i], i);
+            alert("length in handleresponse: " + resp.length);
+            createPinTrack(resp[i]);
         }
     }
     if (auswahl == "heatmap" || auswahl == "mobile") {
@@ -265,29 +274,23 @@ function createPinTrack(obj) {
     var punkt = [obj.Messwerte[0].Standort.Longitude, obj.Messwerte[0].Standort.Latitude];
     //Erstelle eigenen Marker mit dem am Beginn deklarierten Objekt
     var werte = "";
-    var zeitpkte = "";
-
-    var list = obj.Messwerte.getEnumerator();
-    var count = 0;
-    while (list.moveNext()) {
-        count += 1;
+   
+    for (var i = 0; i < obj.Messwerte.length; i++) {
+        werte =werte+ obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktForJavascript + "<br>";
     }
-    alert(count + "");
-    //for (var i = 0; i < obj.Messwerte.getEnumerator.Count; i++) {
-    //    werte += obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktDerMessung + "\n";
-
-    //}
-    alert("ok3");
-    var marker = new SoundCheckMarker(punkt, {
+   
+    
+    var marker = new SoundCheckMarkerTrack(punkt, {
         title: obj.ID,
         Wert_Zeitpunkt: werte
     });
     pointsPointTrack.push(marker);
     punktLayerTrack = marker;
+    
     //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
-    marker.bindPopup("<b>TrackingMessung</b><br><b>Messzeitpunkt</b>: " + obj.Messwerte[i].ZeitpunktForJavascript + " <br>" +
-        "<b>Lautstärke</b>: " +
-        werte + "keine werte?").openPopup();
+    marker.bindPopup("<b>TrackingMessung</b><br>" +
+        "Werte: <br>" +
+        werte ).openPopup();
     marker.addTo(map);
 }
 
@@ -328,7 +331,7 @@ function neuerFilter() {
     );
 }
 
-function removeMarker(layer) {
+function removeMarker() {
     for (var i = 0; i < pointsPoint.length; i++) {
         map.removeLayer(pointsPoint[i]);
 
@@ -336,8 +339,11 @@ function removeMarker(layer) {
     pointsPoint = [];
 }
 
-function removeOverlay(layer) {
-    map.removeLayer(layer);
+function removeOverlay() {
+    for (var i = 0; i < pointsPointTrack.length; i++) {
+        map.removeLayer(pointsPointTrack[i]);
+
+    }
     feld = [];
 
 }
@@ -371,11 +377,11 @@ function drawOverlay(checkedAuswahl, isChecked) {
             }
 
             else if (checkedAuswahl == "track") {
-                removeMarker(punktLayerTrack);
+                removeMarker();
 
             }
             else {
-                removeMarker(punktLayer);
+                removeMarker();
             }
         }
     }

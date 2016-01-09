@@ -36,14 +36,13 @@ public partial class _Default : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static List<TimeTrackingMessung> GetMessungenTimeTracking()
+    public static TimeTrackMessungsListe GetMessungenTimeTracking()
     {
-        Messungsliste messungen = new Messungsliste();
-        List<TimeTrackingMessung> trackmes = new List<TimeTrackingMessung>();
+        TimeTrackMessungsListe trackmessungen = new TimeTrackMessungsListe();
         JavaScriptSerializer serializer = new JavaScriptSerializer();
-        trackmes = messungen.LoadFromSOSTimeTracking();
+        trackmessungen.LoadFromSOSTimeTracking();
 
-        return trackmes;
+        return trackmessungen;
     }
 
     /// <summary>

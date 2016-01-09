@@ -81,9 +81,9 @@
                             Anzahl
                         </label>
                          <label for="check4">
-+                            <input type="checkbox" name="view" value="track" id="check4" onclick="drawOverlay(this.value, check4.checked)">
-+                            Tracking
-+                        </label>
+                           <input type="checkbox" name="view" value="track" id="check4" onclick="drawOverlay(this.value, check4.checked)">
+                           Tracking
+                        </label>
                     </fieldset>
                 </td>
             </tr>

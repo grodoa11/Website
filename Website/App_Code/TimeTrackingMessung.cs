@@ -18,7 +18,7 @@ namespace AppCode
 
         public TimeTrackingMessung()
         {
-
+            
         }
 
 

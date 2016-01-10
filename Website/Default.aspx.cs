@@ -69,4 +69,21 @@ public partial class _Default : System.Web.UI.Page
         return messungen;
     }
 
+    [WebMethod]
+    public static TimeTrackMessungsListe GetMessungenFilteredTrack(DateTime startdatum, DateTime enddatum)
+    {
+        if (startdatum > enddatum)
+        {
+            //Falsche Eingabe
+            throw new Exception("Fehler! Enddatum kleiner als Startdatum");
+        }
+        
+        TimeTrackMessungsListe trackmessungen = new TimeTrackMessungsListe();
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        trackmessungen.Clear();
+        trackmessungen.LoadFromSOSTimeTracking(startdatum, enddatum);
+
+        return trackmessungen;
+    }
+
 }

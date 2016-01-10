@@ -9,33 +9,27 @@ var points = [];
 var punktLayer;
 var punktLayerTrack;
 var heatmap;
-var anz;
 var zaehlertimetracking = 0;
 var map;
+var checkHeat = false, checkPunkt = false, checkTrack = false, checkAnz = false, checkMobile = false; //evt. für filter
 
 //Eigener Marker mit Informationen wie Wert
 SoundCheckMarker = L.Marker.extend({
     options: {
         Wert: 'Wert',
         Zeitpunkt: 'Zeitpunkt'
-        
+
     }
 });
 
-SoundCheckMarkerTrack = L.Marker.extend({
-    options: {
-        Wert: 'Wert',
-        Zeitpunkt: 'Zeitpunkt',
-        color:'green'
-    }
-});
+
 
 
 var myIcon = L.icon({
     iconUrl: 'img/marker-icon_green.png',
-    
+
     iconAnchor: [12, 40],
-    
+
 });
 
 
@@ -165,9 +159,9 @@ function drawDiagram(obj) {
             labs[i] = 1 * i;
         }
     } else {
-        for (var i = 0; i < obj.Messwerte.length/2; i++) {
-            werte[i] = obj.Messwerte[i+1].Wert;
-            labs[i] = 1 * (i+1);
+        for (var i = 0; i < obj.Messwerte.length / 2; i++) {
+            werte[i] = obj.Messwerte[i + 1].Wert;
+            labs[i] = 1 * (i + 1);
         }
     }
 
@@ -238,7 +232,7 @@ function showCurrentPlace() {
 //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
 //befüllt die Daten für Heatmap
 function handleResponse(resp) {
-    
+
     for (i = 0; i < resp.length; i++) {
 
         if (auswahl == "mobile") {
@@ -301,7 +295,6 @@ function loadHeatMap() {
         feld, { radius: 25, maxZoom: 14, blur: 15 });
     //points.push(heat);
     heatmap = heat;
-    anz = heat;
     heat.addTo(map);
 }
 
@@ -328,9 +321,9 @@ function createPinTrack(obj) {
     var punkt = [obj.Messwerte[0].Standort.Longitude, obj.Messwerte[0].Standort.Latitude];
     //Erstelle eigenen Marker mit dem am Beginn deklarierten Objekt
     var werte = "";
-   
+
     for (var i = 0; i < obj.Messwerte.length; i++) {
-        werte =werte+ obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktForJavascript + "<br>";
+        werte = werte + obj.Messwerte[i].Wert + "db " + obj.Messwerte[i].ZeitpunktForJavascript + "<br>";
     }
     //Anzeige der einzelnen Werte
     var werteinGUI = "<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#collapseWerte' aria-expanded='false' aria-controls='collapseWerte'>" +
@@ -341,21 +334,20 @@ function createPinTrack(obj) {
      werte +
    "</div></div>";
     //var greenicon = new LeafIcon({ iconUrl: 'img/marker-icon_green.png' });
-    var marker = new SoundCheckMarkerTrack(punkt, {
+    var marker = new SoundCheckMarker(punkt, {
         title: obj.ID,
         Wert_Zeitpunkt: werte,
         icon: myIcon
     });
     pointsPointTrack.push(marker);
     punktLayerTrack = marker;
-    
+
     //Binde ein Popup an den Marker der die wichtigsten Informationen enthält
     marker.bindPopup("<b>TrackingMessung</b><br>" +
         "<canvas id='can" + obj.ID + "'></canvas>" +
         "<br>" + werteinGUI).openPopup();
     //Wenn auf den Pin geklickt wird, dann zeichne das Diagram, damit die Canvas Objekte schon da sind.
-    marker.on('click', function (e)
-    {
+    marker.on('click', function (e) {
         drawDiagram(obj);
     });
 
@@ -386,10 +378,40 @@ function neuerFilter() {
             try {
                 msgPoint = msg.d;
                 //handleResponse(msg.d);
-                drawOverlay("heatmap", false);
-                drawOverlay("punkte", false);
-                drawOverlay("heatmap", true);
-                drawOverlay("punkte", true);
+
+                removeMarker("punkte");
+                
+                removeOverlay();
+                drawOverlay("heatmap", checkHeat);
+                drawOverlay("punkte", checkPunkt);
+                
+                drawOverlay("anzahl", checkAnz);
+
+            } catch (ex) {
+                alert(ex);
+            }
+            //console.log(msg);
+        }
+    }
+    );
+
+    $.ajax({
+        type: "POST",
+        url: "Default.aspx/GetMessungenFilteredTrack",
+        data: JSON.stringify(obj),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (msg) {
+            try {
+                msgTrack = msg.d;
+                //handleResponse(msg.d);
+
+                
+                removeMarker("track");
+                
+                drawOverlay("track", checkTrack);
+                
+
             } catch (ex) {
                 alert(ex);
             }
@@ -399,25 +421,70 @@ function neuerFilter() {
     );
 }
 
-function removeMarker() {
-    for (var i = 0; i < pointsPoint.length; i++) {
-        map.removeLayer(pointsPoint[i]);
+function removeMarker(obj) {
 
+
+
+    if (obj == "punkte") {
+        for (var i = 0; i < pointsPoint.length; i++) {
+            map.removeLayer(pointsPoint[i]);
+
+        }
+        pointsPoint = [];
     }
-    pointsPoint = [];
+
+    else {
+        for (var i = 0; i < pointsPointTrack.length; i++) {
+            map.removeLayer(pointsPointTrack[i]);
+
+        }
+        pointsPointTrack = [];
+    }
 }
 
 function removeOverlay() {
-    for (var i = 0; i < pointsPointTrack.length; i++) {
-        map.removeLayer(pointsPointTrack[i]);
-
+    if (feld.length > 0) {
+        map.removeLayer(heatmap);
+        feld = [];
     }
-    feld = [];
+
 
 }
 
 function drawOverlay(checkedAuswahl, isChecked) {
 
+
+
+    if (checkedAuswahl == "track" && isChecked == true) {
+        checkTrack = true;
+    }
+    else if (checkedAuswahl == "track") {
+        checkTrack = false;
+        
+    }
+
+    if (checkedAuswahl == "heatmap" && isChecked == true) {
+        checkHeat = true;
+    }
+    else if (checkedAuswahl == "heatmap") {
+        checkHeat = false;
+    }
+
+    if (checkedAuswahl == "punkte" && isChecked == true) {
+        checkPunkt = true;
+    }
+    else if (checkedAuswahl == "punkte") {
+        checkPunkt = false;
+    }
+
+    if (checkedAuswahl == "anzahl" && isChecked == true) {
+        checkAnz = true;
+    }
+    else if (checkedAuswahl == "anzahl") {
+        checkAnz = false;
+    }
+
+    
 
     if (checkedAuswahl == "mobile") {
         auswahl = "mobile";
@@ -444,11 +511,11 @@ function drawOverlay(checkedAuswahl, isChecked) {
             }
 
             else if (checkedAuswahl == "track") {
-                removeMarker();
+                removeMarker("track");
 
             }
             else {
-                removeMarker();
+                removeMarker("punkte");
             }
         }
     }

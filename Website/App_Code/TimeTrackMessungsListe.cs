@@ -125,6 +125,11 @@ namespace AppCode
             
         }
 
+        public void LoadFromSOSTimeTracking(DateTime startDate, DateTime endDate)
+        {
+            GetObservationTimeTracking(startDate, endDate);
+        }
+
 
         private void GetObservationTimeTracking(DateTime startDate, DateTime endDate)
         {

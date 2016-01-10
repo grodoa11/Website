@@ -92,18 +92,18 @@ namespace AppCode
             set { m_Messwerte[index] = value; }
         }
 
-        public List<Messwert> Filter(DateTime startDate, DateTime enddate)
-        {
-            List<Messwert> messungenGefiltert = new List<Messwert>();
-            foreach (Messwert mw in m_Messwerte)
-            {
-                if (mw.ZeitpunktDerMessung > startDate && mw.ZeitpunktDerMessung < enddate)
-                {
-                    messungenGefiltert.Add(mw);
-                }
-            }
-            return messungenGefiltert;
-        }
+        //public List<Messwert> Filter(DateTime startDate, DateTime enddate)
+        //{
+        //    List<Messwert> messungenGefiltert = new List<Messwert>();
+        //    foreach (Messwert mw in m_Messwerte)
+        //    {
+        //        if (mw.ZeitpunktDerMessung > startDate && mw.ZeitpunktDerMessung < enddate)
+        //        {
+        //            messungenGefiltert.Add(mw);
+        //        }
+        //    }
+        //    return messungenGefiltert;
+        //}
 
         /// <summary>
         /// Methode ladet SOS Werte ab dem 1.1.2015
@@ -113,11 +113,7 @@ namespace AppCode
             GetObservation(new DateTime(2015, 01, 01), DateTime.Now);
         }
 
-        public List<TimeTrackingMessung> LoadFromSOSTimeTracking()
-        {
-            GetObservationTimeTracking(new DateTime(2015, 01, 01), DateTime.Now);
-            return m_track;
-        }
+
 
         /// <summary>
         /// Methode ladet SOS Werte zwischen den übergegebenen Zeitpunkten
@@ -169,70 +165,7 @@ namespace AppCode
         }
 
 
-        private void GetObservationTimeTracking(DateTime startDate, DateTime endDate)
-        {
-            String jsonStr = m_Con.GetObservationTimeTracking(startDate, endDate);
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            SOSHelper helper = serializer.Deserialize<SOSHelper>(jsonStr);
-
-            String allResponses = "";
-            try
-            {
-
-                foreach (Observation observation in helper.observations)
-                {
-                    object[] allnamparts = ((object[])observation.featureOfInterest.name);
-                    if (allnamparts.Length <= 3)
-                    {
-                        //allResponses += m_Con.GetObservation(featureOfInterest.identifier.value);
-                        List<Single> geometry = observation.featureOfInterest.geometry.coordinates;
-                        Single x = geometry[0];
-                        Single y = geometry[1];
-                        Messwert mw = new Messwert();
-                        mw.Standort = new Standort { Longitude = x, Latitude = y };
-                        mw.ArtDerMessung = ArtDerMessung.Loggingmessung;
-                        mw.ZeitpunktDerMessung = observation.resultTime;
-                        mw.ZeitpunktForJavascript = observation.resultTime.ToShortDateString() + " " +
-                                                    observation.resultTime.ToShortTimeString();
-                        mw.Wert = observation.result.value;
-                        Dictionary<String, object> dict = ((Dictionary<String, object>)allnamparts[2]);
-                        mw.ID = allnamparts[0].ToString() + allnamparts[1].ToString() + "" + dict.SingleOrDefault(p => p.Key == "value").Value;
-                        //mw.ZeitpunktDerMessung = observation.featureOfInterest.resultTime;
-                        this.m_Messwerte.Add(mw);
-                    }
-
-                }
-
-                foreach (Messwert mesw in m_Messwerte)
-                {
-                    if (m_track.Where(p => p.ID == mesw.ID).FirstOrDefault() == null)
-                    {
-                        m_track.Add(new TimeTrackingMessung
-                        {
-                            ID = mesw.ID,
-                            Beschreibung = mesw.Beschreibung,
-                            Messwerte = new List<Messwert>() {
-                            mesw
-                        }
-                        });
-                    }
-
-                    else
-                    {
-                        m_track.Where(p => p.ID == mesw.ID).FirstOrDefault().Messwerte.Add(mesw);
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-
-                Console.WriteLine("keine messungen");
-            }
-        }
-
 
 
     }
-
 }

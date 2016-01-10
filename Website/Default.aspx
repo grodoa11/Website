@@ -70,12 +70,12 @@
                 <td>
                     <fieldset>
                         <label for="check1">
-                            <input type="checkbox" name="view" value="heatmap" checked="checked" id="check1" onclick="drawOverlay(this.value,check1.checked)" >
+                            <input type="checkbox" name="view" value="heatmap" id="check1" onclick="drawOverlay(this.value,check1.checked)" >
                             Heatmap
                         </label>
                         <label for="check2">
-                            <input type="checkbox" name="view" value="punkte"  id="check2" onclick="drawOverlay(this.value, check2.checked)">
-                            Punkte
+                            <input type="checkbox" name="view" value="punkte" checked="checked" id="check2" onclick="drawOverlay(this.value, check2.checked)">
+                            Standardmessungen
                         </label>
                         <label for="check3">
                             <input type="checkbox" name="view" value="anzahl" id="check3" onclick="drawOverlay(this.value, check3.checked)">

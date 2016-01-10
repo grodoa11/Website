@@ -1,6 +1,6 @@
 ﻿//Member für Heatmap
 var feld = [];
-var auswahl = "heatmap";
+var auswahl = "punkte";
 var msgPoint;
 var msgTrack;
 var pointsPoint = [];
@@ -11,6 +11,7 @@ var punktLayerTrack;
 var heatmap;
 var anz;
 var zaehlertimetracking = 0;
+var map;
 
 //Eigener Marker mit Informationen wie Wert
 SoundCheckMarker = L.Marker.extend({
@@ -100,7 +101,9 @@ Dafür wird folgendermaßen vorgegangen:
 */
 function loadMeasurements() {
     map = loadBasemap();
-    var data = [1, 2, 3, 4];
+    var width = $(window).width();
+    document.getElementById("map").style.width = width;
+
     var options = ["Decibels"];
 
     //Hole Messungen mit AJAX von der Default.aspx.cs
@@ -116,7 +119,7 @@ function loadMeasurements() {
 
                 msgPoint = msg.d;
 
-                drawOverlay("heatmap", true);
+                drawOverlay("punkte", true);
             } catch (ex) {
                 alert(ex);
 
@@ -225,7 +228,7 @@ function loadMeasurementsMobile() {
 function showCurrentPlace() {
     var lat = document.getElementById("hiddenFieldLat").value;
     var lon = document.getElementById("hiddenFieldLon").value;
-
+    map.panTo(new L.LatLng(lat, lon));
     var marker = L.marker([lat, lon], { icon: currentPlaceIcon });
     marker.bindPopup("<b>Du bist hier</b>");
     marker.addTo(map);
@@ -337,7 +340,7 @@ function createPinTrack(obj) {
    "<div class='well'>" +
      werte +
    "</div></div>";
-    var greenicon = new LeafIcon({ iconUrl: 'img/marker-icon_green.png' });
+    //var greenicon = new LeafIcon({ iconUrl: 'img/marker-icon_green.png' });
     var marker = new SoundCheckMarkerTrack(punkt, {
         title: obj.ID,
         Wert_Zeitpunkt: werte,

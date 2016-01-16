@@ -38,6 +38,13 @@ namespace AppCode
         {
             return String.Format("Beschreibung: {0}, Messung: {1}, Zeitpunkt: {2}, Art der Messung: {3}", Beschreibung, Wert, ZeitpunktDerMessung, ArtDerMessung.ToString());
         }
+
+
+        public override bool Equals(object obj)
+        {
+            Messwert mw = (Messwert) obj;
+            return mw.ZeitpunktDerMessung.ToShortDateString() == this.ZeitpunktDerMessung.ToShortDateString();
+        }
     }
 
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.ServiceModel.Description;
@@ -50,8 +51,7 @@ namespace AppCode
 
         public bool Contains(Messwert item)
         {
-            //todo
-            return true;
+            return this.m_Messwerte.Contains(item);
         }
 
         public void CopyTo(Messwert[] array, int arrayIndex)
@@ -165,7 +165,17 @@ namespace AppCode
         }
 
 
+        public void Sort()
+        {
+            this.m_Messwerte.Sort(new MyComparer());
+        }
+    }
 
-
+    public class MyComparer : IComparer<Messwert>
+    {
+        public int Compare(Messwert x, Messwert y)
+        {
+            return x.ZeitpunktDerMessung.CompareTo(y.ZeitpunktDerMessung);
+        }
     }
 }

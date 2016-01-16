@@ -49,6 +49,7 @@
             <div>
                 <ul class="nav navbar-nav">
                     <li ><a href="#" class="active">Lärmkarte</a></li>
+                    <li><a href="Statistik.aspx">Statistik</a></li>
                     <li><a href="Info.html">Info</a></li>
                 </ul>
             </div>

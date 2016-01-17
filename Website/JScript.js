@@ -1,5 +1,6 @@
 ﻿//Member für Heatmap
 var feld = [];
+var feldAnz = [];
 var auswahl = "punkte";
 var msgPoint;
 var msgTrack;
@@ -10,6 +11,7 @@ var points = [];
 var punktLayer;
 var punktLayerTrack;
 var heatmap;
+var heatmapAnz;
 var baseheatmap;
 var zaehlertimetracking = 0;
 var map;
@@ -24,16 +26,12 @@ SoundCheckMarker = L.Marker.extend({
     }
 });
 
-
-
-
 var myIcon = L.icon({
     iconUrl: 'img/marker-icon_green.png',
 
     iconAnchor: [12, 40],
 
 });
-
 
 //Eigenes Icon für den aktuellen Standort (icon url zeigt durch window.location.origin immer auf die richtige Position)s
 var currentPlaceIcon = L.icon({
@@ -112,15 +110,12 @@ function loadMeasurements() {
             try {
                 //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
                 L.control.mousePosition().addTo(map);
-
                 msgPoint = msg.d;
-
                 drawOverlay("punkte", true);
             } catch (ex) {
                 alert(ex);
 
             }
-            //console.log(msg);
         }
     }
     );
@@ -133,20 +128,15 @@ function loadMeasurements() {
         success: function (msg) {
             try {
                 //Fügt einen Pointer hinzu, der die Koordinaten unter dem Mauszeiger liefert.
-
-
                 msgTrack = msg.d;
 
             } catch (ex) {
                 alert(ex);
 
             }
-            //console.log(msg);
         }
     }
     );
-
-
 }
 
 //Funktion zeichnet das Diagramm für die TimeTrackingMessung
@@ -184,8 +174,6 @@ function drawDiagram(obj) {
             }
         ]
     };
-
-
     var myLineChart = new Chart(ctx).Line(data);
     zaehlertimetracking++;
 }
@@ -206,15 +194,11 @@ function loadMeasurementsMobile() {
         dataType: "json",
         success: function (msg) {
             try {
-
-
                 msgPoint = msg.d;
-
                 drawOverlay("mobile", true);
             } catch (ex) {
                 alert(ex);
             }
-            //console.log(msg);
         }
     }
     );
@@ -234,34 +218,20 @@ function showCurrentPlace() {
 //Funktion die mit dem Response umgeht -> Response = Objekt mit Orten
 //befüllt die Daten für Heatmap
 function handleResponse(resp) {
-    //borders: N:49,03; O:17,16; S:46,36; W:9,53
-
-    //for (x = 46, 36; x < 49, 03; x += 0, 01)
-    //{
-
-    //}
-
-
     for (i = 0; i < resp.length; i++) {
 
         if (auswahl == "mobile") {
 
             createPin(resp[i], i);
             fillHeatMapDataLaut(resp[i], i);
-
         }
         if (auswahl == "anzahl") {
-            fillHeatMapDataLaut(resp[i], i);
+            fillHeatMapDataAnzahl(resp[i], i);
             //loadHeatMap(feld);
         }
         else if (auswahl == "heatmap") {
 
             fillHeatMapDataLaut(resp[i], i);
-
-
-
-
-
         }
         else if (auswahl == "punkte") {
             createPin(resp[i], i);
@@ -270,9 +240,12 @@ function handleResponse(resp) {
             createPinTrack(resp[i]);
         }
     }
-    if (auswahl == "heatmap" /*|| auswahl == "mobile"*/) {
+    if (auswahl == "heatmap" || auswahl == "mobile") {
         loadHeatMap();
 
+    }
+    if (auswahl == "anzahl") {
+        loadHeatMapAnz();
     }
     console.log("test");
 
@@ -280,50 +253,42 @@ function handleResponse(resp) {
 
 function fillHeatMapDataAnzahl(resp, i) {
 
-    feld[i] = [data.Standort.Longitude, data.Standort.Latitude, 0.8];
+    feldAnz[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 1];
 }
 
 function fillHeatMapDataLaut(resp, i) {
     var notinblocks = true;
-
-
-
     var intense = 0;
     if (resp.Wert >= 80) {
-        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.65];
+        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 1];
     }
     else if (resp.Wert >= 60) {
-        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.5];
+        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.75];
     } else if (resp.Wert >= 40) {
-        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.38];
+        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.65];
     }
     else if (resp.Wert < 40) {
-        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.25];
+        feld[i] = [resp.Standort.Longitude, resp.Standort.Latitude, 0.5];
     }
 
-
-    for (j = 0; j < heatBlocks.length; j++) {
-        for (var k = 0; k < heatBlocks[j].length; k++) {
-
-            if (heatBlocks[j][k] == Math.floor(feld[i][0] * 1000) / 1000) {
-
+    try {
+        for (j = 0; j < heatBlocks.length; j++) {
+            if (heatBlocks[j][0] == Math.floor(feld[i][0] * 1000) / 1000 && heatBlocks[j][1] == Math.floor(feld[i][1] * 1000) / 1000) {
                 heatBlocks[j].push(feld[i]);
                 notinblocks = false;
-
             }
         }
 
-
+    } catch (e) {
+        alert("fillheatmapdatalaut: " + e);
     }
-
-
     if (notinblocks) {
         try {
 
-            heatBlocks.push([Math.floor(resp.Standort.Longitude * 1000) / 1000, Math.floor(resp.Standort.Latitude * 1000) / 1000]);
+            heatBlocks.push([Math.floor(feld[i][0] * 1000) / 1000, Math.floor(feld[i][1] * 1000) / 1000, feld[i]]);
 
         } catch (e) {
-            alert("Fehler: "+e);
+            alert("Fehler: " + e);
         }
 
     }
@@ -334,45 +299,41 @@ function fillHeatMapDataLaut(resp, i) {
 function loadHeatMap() {
 
     var feldforhm = [];
-    var long=0, lat=0, val=0, anz=0;
-    alert(heatBlocks.length);
+    var long = 0, lat = 0, val = 0, anz = 0;
+    
     try {
-        
+
         for (i = 0; i < heatBlocks.length; i++) {
-            
-            
             for (j = 2; j < heatBlocks[i].length; j++) {
-                //alert("messung: "+heatBlocks[i][j]+"  an stelle:"+j);
                 long = long + heatBlocks[i][j][0];
                 lat = lat + heatBlocks[i][j][1];
                 val = val + heatBlocks[i][j][2];
                 anz++;
-                //alert("kein fehler");
             }
             var mittelw = val / anz;
-            //alert("val "+val+"  anz "+anz+" mw:"+mittelw);
             feldforhm.push([heatBlocks[i][0], heatBlocks[i][1], mittelw]);
-            
-            
-            //alert("laenge: "+feldforhm.length+"    "+val+" "+anz);
             long = 0; lat = 0; val = 0; anz = 0;
         }
     } catch (e) {
-        alert("Fehler: "+e);
+        alert("Fehler: " + e);
 
     }
-
-
-    alert(feldforhm);
-
-
-    //feldforhm.push(feld[j]);
     var heat = L.heatLayer(
-        feldforhm, { radius: 25, maxZoom: 16, blur: 10 });
-    //points.push(heat);
+        feldforhm, { radius: 35, maxZoom: 14, blur: 10 });
     heatmap = heat;
     heat.addTo(map);
 }
+
+function loadHeatMapAnz() {
+
+
+    var heatanz = L.heatLayer(
+        feldAnz, { radius: 25, maxZoom: 14, blur: 10 });
+    heatmapAnz = heatanz;
+    heatanz.addTo(map);
+}
+
+
 
 //Funktion erstellt den Pin an long und lat
 function createPin(obj) {
@@ -453,16 +414,12 @@ function neuerFilter() {
         success: function (msg) {
             try {
                 msgPoint = msg.d;
-                //handleResponse(msg.d);
-
                 removeMarker("punkte");
-
-                removeOverlay();
+                removeOverlay("heatmap");
+                removeOverlay("anzahl");
                 drawOverlay("heatmap", checkHeat);
                 drawOverlay("punkte", checkPunkt);
-
                 drawOverlay("anzahl", checkAnz);
-
             } catch (ex) {
                 alert(ex);
             }
@@ -481,13 +438,8 @@ function neuerFilter() {
             try {
                 msgTrack = msg.d;
                 //handleResponse(msg.d);
-
-
                 removeMarker("track");
-
                 drawOverlay("track", checkTrack);
-
-
             } catch (ex) {
                 alert(ex);
             }
@@ -518,12 +470,20 @@ function removeMarker(obj) {
     }
 }
 
-function removeOverlay() {
-    if (feld.length > 0) {
-        map.removeLayer(heatmap);
-        feld = [];
-    }
+function removeOverlay(auswahl) {
 
+    if (auswahl == "heatmap") {
+        if (feld.length > 0) {
+            map.removeLayer(heatmap);
+            feld = [];
+        }
+    }
+    else {
+        if (feldAnz.length > 0) {
+            map.removeLayer(heatmapAnz);
+            feldAnz = [];
+        }
+    }
 
 }
 
@@ -575,7 +535,15 @@ function drawOverlay(checkedAuswahl, isChecked) {
                 handleResponse(msgTrack);
             }
             else {
-                alert(auswahl);
+                if (auswahl == "heatmap")
+                {
+                    removeOverlay("heatmap");
+                }
+                
+                if (auswahl == "anzahl")
+                {
+                    removeOverlay("anzahl")
+                }
                 auswahl = checkedAuswahl
                 handleResponse(msgPoint);
 
@@ -583,11 +551,11 @@ function drawOverlay(checkedAuswahl, isChecked) {
         }
         if (isChecked == false) {
             if (checkedAuswahl == "heatmap" || checkedAuswahl == ("anzahl")) {
-                removeOverlay(heatmap);
+                removeOverlay(checkedAuswahl);
             }
 
             else if (checkedAuswahl == "track") {
-                removeMarker("track");
+                removeMarker(checkedAuswahl);
 
             }
             else {

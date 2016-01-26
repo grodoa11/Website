@@ -16,7 +16,8 @@ var baseheatmap;
 var zaehlertimetracking = 0;
 var map;
 var checkHeat = false, checkPunkt = false, checkTrack = false, checkAnz = false, checkMobile = false; //evt. für filter
-
+var featureGroup;
+var rectfield = [];
 //Eigener Marker mit Informationen wie Wert
 SoundCheckMarker = L.Marker.extend({
     options: {
@@ -80,12 +81,59 @@ function loadBasemap() {
     //var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     //}).addTo(map);
-
+    map.on('click', onMapClick);
 
 
     return map;
 }
 
+function onMapClick(e) {
+    //map click event object (e) has latlng property which is a location at which the click occured.
+    popup
+      .setLatLng(e.latlng)
+      .setContent("You clicked the map at " + e.latlng.toString())
+      .openOn(map);
+}
+
+function onAnalyse() {
+    alert("hier");
+    featureGroup = L.featureGroup().addTo(map);
+    console.log(featureGroup);
+    var options = {
+        position: 'topleft',
+        draw: {
+            
+        },
+        edit: {
+            featureGroup: featureGroup
+            
+        }
+    };
+    var drawControl = new L.Control.Draw({
+        options:options
+    }).addTo(map);
+
+    console.log(drawControl);
+    
+    map.on('draw:created', drawing);
+
+}
+function drawing(e) {
+    var rect = e.layer;
+    
+    var latlangs = rect.getLatLngs();
+
+    var lats = [];
+    var longs = [];
+    for (var i = 0; i < latlangs.length; i++) {
+        lats.push(latlangs[i].lat);
+        longs.push(latlangs[i].lng);
+    }
+
+    rect.bindPopup("Ich bin ein Testpopup</br> lats: "+lats+"   </br>longs: "+longs);
+    rectfield.push(rect);
+    featureGroup.addLayer(rect);
+}
 /*
 Methode holt Messorte.
 Dafür wird folgendermaßen vorgegangen:
@@ -177,6 +225,8 @@ function drawDiagram(obj) {
     var myLineChart = new Chart(ctx).Line(data);
     zaehlertimetracking++;
 }
+
+
 
 
 function loadMeasurementsMobile() {
@@ -300,7 +350,7 @@ function loadHeatMap() {
 
     var feldforhm = [];
     var long = 0, lat = 0, val = 0, anz = 0;
-    
+
     try {
 
         for (i = 0; i < heatBlocks.length; i++) {
@@ -535,13 +585,11 @@ function drawOverlay(checkedAuswahl, isChecked) {
                 handleResponse(msgTrack);
             }
             else {
-                if (auswahl == "heatmap")
-                {
+                if (auswahl == "heatmap") {
                     removeOverlay("heatmap");
                 }
-                
-                if (auswahl == "anzahl")
-                {
+
+                if (auswahl == "anzahl") {
                     removeOverlay("anzahl")
                 }
                 auswahl = checkedAuswahl

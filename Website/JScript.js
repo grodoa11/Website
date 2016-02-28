@@ -15,7 +15,7 @@ var heatmapAnz;
 var baseheatmap;
 var zaehlertimetracking = 0;
 var map;
-var checkHeat = false, checkPunkt = false, checkTrack = false, checkAnz = false, checkMobile = false; //evt. für filter
+var checkHeat = false, checkPunkt = false, checkTrack = false, checkAnz = false, checkMobile = false, checkNo = false; //evt. für filter
 var featureGroup;
 var rectfield = [];
 //Eigener Marker mit Informationen wie Wert
@@ -361,7 +361,10 @@ function loadHeatMap() {
                 anz++;
             }
             var mittelw = val / anz;
-            feldforhm.push([heatBlocks[i][0], heatBlocks[i][1], mittelw]);
+            var mittlong = long / anz;
+            var mittlat = lat / anz;
+
+            feldforhm.push([mittlong, mittlat, mittelw]);
             long = 0; lat = 0; val = 0; anz = 0;
         }
     } catch (e) {
@@ -522,18 +525,39 @@ function removeMarker(obj) {
 
 function removeOverlay(auswahl) {
 
-    if (auswahl == "heatmap") {
-        if (feld.length > 0) {
-            map.removeLayer(heatmap);
-            feld = [];
-        }
-    }
-    else {
-        if (feldAnz.length > 0) {
-            map.removeLayer(heatmapAnz);
-            feldAnz = [];
-        }
-    }
+    //if (auswahl == "all")
+    //{
+    //    if (feld.length > 0) {
+    //        map.removeLayer(heatmap);
+    //        feld = [];
+    //    }
+    //    if (feldAnz.length > 0) {
+    //        map.removeLayer(heatmapAnz);
+    //        feldAnz = [];
+    //    }
+    //}
+
+    //else if (auswahl == "heatmap") {
+    //    if (feld.length > 0) {
+    //        map.removeLayer(heatmap);
+    //        feld = [];
+    //    }
+    //}
+    //else {
+    //    if (feldAnz.length > 0) {
+    //        map.removeLayer(heatmapAnz);
+    //        feldAnz = [];
+    //    }
+    //}
+
+    if (feld.length > 0) {
+                map.removeLayer(heatmap);
+                feld = [];
+            }
+            if (feldAnz.length > 0) {
+                map.removeLayer(heatmapAnz);
+                feldAnz = [];
+            }
 
 }
 
@@ -570,7 +594,13 @@ function drawOverlay(checkedAuswahl, isChecked) {
         checkAnz = false;
     }
 
-
+    
+    if (checkedAuswahl == "no" && isChecked == true) {
+        checkNo = true;
+    }
+    else if (checkedAuswahl == "no") {
+        checkNo = false;
+    }
 
     if (checkedAuswahl == "mobile") {
         auswahl = "mobile";
@@ -584,14 +614,17 @@ function drawOverlay(checkedAuswahl, isChecked) {
                 auswahl = checkedAuswahl;
                 handleResponse(msgTrack);
             }
+
+            
             else {
                 if (auswahl == "heatmap") {
                     removeOverlay("heatmap");
                 }
 
                 if (auswahl == "anzahl") {
-                    removeOverlay("anzahl")
+                    removeOverlay("anzahl");
                 }
+                
                 auswahl = checkedAuswahl
                 handleResponse(msgPoint);
 
@@ -602,13 +635,19 @@ function drawOverlay(checkedAuswahl, isChecked) {
                 removeOverlay(checkedAuswahl);
             }
 
-            else if (checkedAuswahl == "track") {
+             if (checkedAuswahl == "track") {
                 removeMarker(checkedAuswahl);
 
             }
             else {
                 removeMarker("punkte");
             }
+        }
+        if(isChecked==true && checkedAuswahl=="no")
+        {
+        
+            removeOverlay("all");
+        
         }
     }
 }
